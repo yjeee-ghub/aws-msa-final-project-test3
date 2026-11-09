@@ -1,20 +1,20 @@
 {
   "images": {
     "member": {
-      "source": "b09a756f4ca738e542265e7d52174ca20a8b5d7d",
-      "digest": "sha256:3d1f69f77850c5525c9a85f73a4f24e97fd32d05b7eca1a302415436c15aa05f"
+      "source": "0b5365b957a2f56b642f0e1fc9fffe96f86e839e",
+      "digest": "sha256:0f907efa680ece9dbea6801c36bacc7e38e611f6d19344689c357c1213e2b282"
     },
     "product": {
-      "source": "96a83944bd6d35569a1d69cbe34fc84968fd4666",
-      "digest": "sha256:c75049a8cd036f97fb793499ec81d24119c51c40d326aeb3af3003e9ae6f131f"
+      "source": "0b5365b957a2f56b642f0e1fc9fffe96f86e839e",
+      "digest": "sha256:653ef2ce730c5b45d574e2a666b43713775d81b8f9ab128efb3f2b86bc3913d8"
     },
     "ordering": {
       "source": "b09a756f4ca738e542265e7d52174ca20a8b5d7d",
       "digest": "sha256:bfd160f7cf246fd9c30e183573f2db102f71402b0e10af2b0824f7224ae28b5a"
     },
     "apigateway": {
-      "source": "96a83944bd6d35569a1d69cbe34fc84968fd4666",
-      "digest": "sha256:4db9d43c02a36704fbb7d4e83391bb40c240010da45fc7340a838759c809cc0d"
+      "source": "0b5365b957a2f56b642f0e1fc9fffe96f86e839e",
+      "digest": "sha256:25d01f6e11f27372e430c771917d761d6afe81a90a9b0244e167f3ef65b46625"
     },
     "frontend": {
       "source": "b09a756f4ca738e542265e7d52174ca20a8b5d7d",
@@ -24,8 +24,8 @@
   "intent": "release",
   "updatedServices": [
     "member",
-    "ordering",
-    "frontend"
+    "product",
+    "apigateway"
   ],
-  "runId": "42584622743"
+  "runId": "42588654622"
 }
