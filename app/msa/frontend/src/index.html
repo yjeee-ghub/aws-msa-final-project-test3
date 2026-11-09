@@ -3,79 +3,89 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="일상에 작은 취향을 더하는 공간, SYONG STORE.">
-  <meta name="theme-color" content="#173c32">
-  <title>SYONG STORE · 일상에 취향을 더하다</title>
-  <link rel="stylesheet" href="/assets/style.css?v=3">
+  <title>Soldesk Mall</title>
+  <link rel="stylesheet" href="/assets/style.css?v=soldesk-v1">
 </head>
 <body>
-  <a class="skip-link" href="#main">본문 바로가기</a>
-  <div class="top-banner">작은 발견으로 달라지는 일상. <span>Welcome to SYONG STORE.</span></div>
+  <div class="top-banner">단 하루 특가 · 인기 상품 무료배송 이벤트 진행 중</div>
+
   <header class="header">
     <div class="container">
-      <a href="/" class="brand" aria-label="SYONG STORE 홈">syong<span class="brand-accent">store.</span></a>
-      <a class="header-shop" href="#productSection">상품 둘러보기 <span aria-hidden="true">↗</span></a>
+      <a href="/" class="brand">Soldesk <span class="brand-accent">Mall</span></a>
       <nav class="nav" aria-label="회원 메뉴">
-        <a class="btn btn-light" data-guest-only href="/login.html">로그인</a>
-        <a class="btn btn-primary" data-guest-only href="/signup.html">회원가입 <span aria-hidden="true">↗</span></a>
-        <a class="btn btn-primary" data-admin-only style="display:none;" href="/product-create.html">상품등록 <span aria-hidden="true">＋</span></a>
+        <a class="btn btn-secondary" data-guest-only href="/login.html">로그인</a>
+        <a class="btn btn-secondary" data-guest-only href="/signup.html">회원가입</a>
+        <a class="btn btn-primary" data-admin-only style="display:none;" href="/product-create.html">상품등록</a>
         <div id="userBox"></div>
       </nav>
     </div>
   </header>
-  <main class="container" id="main">
-    <section class="hero" aria-labelledby="heroTitle">
-      <div class="hero-copy">
-        <div class="hero-kicker"><span class="status-dot" aria-hidden="true"></span> EVERYDAY, A LITTLE BETTER</div>
-        <h1 id="heroTitle">일상에<br>작은 <em>취향</em>을<br>더하다<span class="title-dot">.</span></h1>
-        <p>매일 쓰는 물건 하나에도 나다운 선택을.<br>마음에 드는 상품을 만나보세요.</p>
+
+  <main class="container">
+    <section class="hero hero-commerce">
+      <div class="hero-panel hero-promo">
+        <div class="hero-label-row">
+          <span class="hero-kicker">SPRING COLLECTION</span>
+          <span class="hero-badge">오늘 출발</span>
+        </div>
+        <h1>지금 가장 많이 찾는<br>인기 상품 모음</h1>
+        <p>새로 등록된 상품부터 많이 보는 인기 상품까지 한눈에 확인해보세요.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary btn-large" href="#productSection">상품 둘러보기 <span aria-hidden="true">↗</span></a>
-          <a class="text-link" data-guest-only href="/signup.html">함께 시작하기 <span aria-hidden="true">→</span></a>
-          <a class="text-link" data-admin-only style="display:none;" href="/product-create.html">상품 등록하기 <span aria-hidden="true">→</span></a>
+          <a class="btn btn-primary" href="#productSection">상품 보러가기</a>
+          <a class="btn btn-light" data-guest-only href="/signup.html">신규 회원 혜택 보기</a>
+          <a class="btn btn-light" data-admin-only style="display:none;" href="/product-create.html">새 상품 등록</a>
         </div>
-        <div class="hero-caption"><span class="caption-line" aria-hidden="true"></span> GOOD THINGS, SIMPLE MOMENTS.</div>
+        <div class="hero-tags">
+          <span>#무료배송</span>
+          <span>#베스트상품</span>
+          <span>#신상입고</span>
+          <span>#빠른배송</span>
+        </div>
       </div>
-      <!-- 외부 이미지 로딩 없이 표시되는 장식용 그래픽 -->
-      <div class="hero-art" aria-hidden="true">
-        <div class="art-top"><span>THE EVERYDAY EDIT</span><span>NO. 02 / SYONG</span></div>
-        <div class="art-orbit"></div><div class="art-word">simple.</div>
-        <div class="art-pedestal"></div><div class="art-vase"><span></span></div>
-        <div class="art-leaf leaf-one"></div><div class="art-leaf leaf-two"></div><div class="art-leaf leaf-three"></div>
-        <div class="art-stem"></div><div class="art-object"></div>
-        <div class="art-sticker">less,<br><i>but better.</i></div>
-        <div class="art-bottom"><span>당신의 일상, 당신의 취향.</span><span>↗</span></div>
+
+      <div class="hero-side hero-side-commerce">
+        <article class="mini-card promo-card dark">
+          <div class="mini-card-overline">MEMBER BENEFIT</div>
+          <div class="mini-card-title">신규 회원 쿠폰</div>
+          <div class="mini-card-text">첫 구매 고객 전용 혜택으로 더 가볍게 시작하세요.</div>
+        </article>
+        <article class="mini-card promo-card light">
+          <div class="mini-card-overline">CURATION</div>
+          <div class="mini-card-title">지금 많이 보는 상품</div>
+          <div class="mini-card-text">실시간으로 관심이 높은 상품을 빠르게 둘러보세요.</div>
+        </article>
       </div>
     </section>
-    <section class="store-note" aria-label="스토어 소개">
-      <span class="note-number">01 — DISCOVER</span>
-      <p>둘러보고, 발견하고, <strong>마음에 드는 것을 담는 시간.</strong></p>
-      <a class="text-link" href="#productSection">지금 만나보기 <span aria-hidden="true">↓</span></a>
+
+    <section class="category-strip" aria-label="카테고리 안내">
+      <div class="category-chip">전체 상품</div>
+      <div class="category-chip">신상품</div>
+      <div class="category-chip">인기 상품</div>
+      <div class="category-chip">빠른 배송</div>
+      <div class="category-chip">추천 상품</div>
     </section>
-    <section id="productSection" class="product-section" aria-labelledby="productsTitle">
+
+    <section id="productSection">
       <div class="section-head">
-        <div><div class="section-eyebrow">THE COLLECTION</div>
-          <h2 class="section-title" id="productsTitle">발견하는 즐거움<span class="title-dot">.</span></h2>
-          <div class="section-sub">등록된 상품을 한곳에서 둘러보세요.</div>
+        <div>
+          <div class="section-title">전체 상품</div>
+          <div class="section-sub">마음에 드는 상품을 선택해 자세히 확인해보세요.</div>
         </div>
-        <div class="section-count" id="productCount" aria-live="polite">상품을 불러오는 중</div>
+        <div class="section-sub section-count" id="productCount" aria-live="polite">상품을 불러오는 중</div>
       </div>
       <div id="productList" class="grid" aria-live="polite"></div>
     </section>
-    <section class="join-panel">
-      <div><div class="section-eyebrow">MAKE IT YOURS</div><h2>당신의 취향도<br>이곳에서 시작해요.</h2></div>
-      <div><p>계정을 만들고 장바구니에 담아<br>마음에 드는 상품을 구매해보세요.</p>
-        <a class="btn btn-primary" data-guest-only href="/signup.html">회원가입하기 <span aria-hidden="true">↗</span></a>
-        <a class="btn btn-primary" data-admin-only style="display:none;" href="/product-create.html">상품 등록하기 <span aria-hidden="true">↗</span></a>
-      </div>
-    </section>
   </main>
+
   <footer class="footer container">
-    <a href="/" class="brand">syong<span class="brand-accent">store.</span></a>
-    <div class="footer-sub">일상에 취향을 더하는 작은 공간</div>
-    <div class="footer-edition">© SYONG STORE · EDITION 02</div>
+    <div>Soldesk Mall</div>
+    <div class="footer-sub">감각적인 쇼핑을 위한 셀렉션</div>
   </footer>
+
   <script src="/assets/app.js?v=demo-v3-fixed"></script>
-  <script>renderHeader(); loadProducts();</script>
+  <script>
+    renderHeader();
+    loadProducts();
+  </script>
 </body>
 </html>
