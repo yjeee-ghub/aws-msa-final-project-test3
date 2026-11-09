@@ -24,13 +24,18 @@ configMapGenerator:
 # CI에서 Git 커밋별 이미지 태그로 변경할 위치
 images:
   - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/member-service
-    newTag: lab-v1
+    newTag: a8f8763834e753bde6aeff04938ac546aaf5f42e
+    digest: sha256:73f9f658e097740994fb7d86545bf4b13af24ae85ff4515a7fa7d36ca0d445ce
   - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/product-service
-    newTag: lab-v1
+    newTag: a8f8763834e753bde6aeff04938ac546aaf5f42e
+    digest: sha256:7240eefafd4fdd4ae3f82ed10418107ae9da6444c74fbac52de7c1fd9f4e57ca
   - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/ordering-service
-    newTag: lab-v1
+    newTag: a8f8763834e753bde6aeff04938ac546aaf5f42e
+    digest: sha256:0694ce1cedfc11b5ddc45cd365cfa917f60d3b3b24a64ba60437b61c876bfc2c
   - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/apigateway
-    newTag: lab-v1
+    newTag: a8f8763834e753bde6aeff04938ac546aaf5f42e
+    digest: sha256:bdb40581ff79294b5ecbacabc3fbf585d826e00615e353199637a7799fbf8272
   - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/frontend-service
-    newTag: lab-v1
+    newTag: a8f8763834e753bde6aeff04938ac546aaf5f42e
+    digest: sha256:0327cbcf85355daabfba7673ed72212e2c3399d4743a749afc93a8e08bfa622b
 
