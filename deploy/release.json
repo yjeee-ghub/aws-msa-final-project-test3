@@ -17,15 +17,13 @@
       "digest": "sha256:25d01f6e11f27372e430c771917d761d6afe81a90a9b0244e167f3ef65b46625"
     },
     "frontend": {
-      "source": "b09a756f4ca738e542265e7d52174ca20a8b5d7d",
-      "digest": "sha256:69f562244ee41a76fb3f675a040b8c1d46df7f4bde9d1636054e419dd2005475"
+      "source": "b5c5b846948a561898c0cc729384c864f8bf0742",
+      "digest": "sha256:b7f0c4ba144fc77c8733ba9fcdb3f76a22268db2f678c7a133f1e74783a3f0f2"
     }
   },
   "intent": "release",
   "updatedServices": [
-    "member",
-    "product",
-    "apigateway"
+    "frontend"
   ],
-  "runId": "42588654622"
+  "runId": "42589924185"
 }
