@@ -8,7 +8,7 @@ function app(fetch) {
   const context = vm.createContext({ console, fetch, FormData, URLSearchParams,
     window: { location: {} }, crypto: require("node:crypto").webcrypto, setTimeout, localStorage: { getItem: k => data.get(k), setItem: (k,v) => data.set(k,v), removeItem: k => data.delete(k) } });
   vm.runInContext(fs.readFileSync(__dirname + '/../src/assets/app.js', 'utf8'), context);
-  context.saveAuth({id: 7, token: 'test'});
+  context.saveAuth({id: 7, token: 'test', email: 'test@example.com'});
   return context;
 }
 
@@ -36,6 +36,17 @@ test('checkout sends quantities and removes successes only', async () => {
   assert.deepEqual(requests, [{productId:1,productCount:3}, {productId:2,productCount:2}]);
   assert.equal(c.readCart().length, 1);
   assert.equal(c.readCart()[0].id, 2);
+});
+
+test('invalid login email keeps the cart and stops before any order request', async () => {
+  const c = app(async () => assert.fail('order request must not be sent'));
+  c.saveAuth({id: 7, token: 'test', email: 'guest@localhost'});
+  c.saveCart([{id:1,name:'bouquet',quantity:2,price:100}]);
+  const result = await c.checkoutCart();
+  assert.equal(result.succeeded, 0);
+  assert.match(result.failures[0], /이메일 주소/);
+  assert.equal(c.readCart()[0].quantity, 2);
+  assert.equal(c.readCart()[0].requestKey, undefined);
 });
 
 test('corrupt browser state is handled and product text is escaped', () => {

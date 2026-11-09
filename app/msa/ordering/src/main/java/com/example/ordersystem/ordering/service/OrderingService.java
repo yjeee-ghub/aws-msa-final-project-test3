@@ -46,8 +46,9 @@ public class OrderingService {
           HttpStatus.BAD_REQUEST, "Idempotency-Key (16-80 characters) required");
     Ordering o = orders.findByMemberIdAndRequestKey(memberId, key).orElse(null);
     if (o == null) {
+      String email = recipientEmail(memberId);
       try {
-        o = tx.create(memberId, dto, key, reservation(memberId, key));
+        o = tx.create(memberId, dto, key, reservation(memberId, key), email);
       } catch (DataIntegrityViolationException concurrent) {
         o = orders.findByMemberIdAndRequestKey(memberId, key).orElseThrow(() -> concurrent);
       }
@@ -71,6 +72,11 @@ public class OrderingService {
     }
   }
 
+  private String recipientEmail(Long memberId) {
+    var recipient = member.email(memberId, token);
+    return OrderTransactions.requireRecipientEmail(recipient == null ? null : recipient.email());
+  }
+
   // 네트워크 호출은 DB 트랜잭션 밖에서 수행하고, 각 단계의 의도를 먼저 저장한다.
   public void process(Long id) {
     String lease = UUID.randomUUID().toString();
@@ -79,13 +85,15 @@ public class OrderingService {
     try {
       if (o.getOrderStatus() == OrderStatus.PENDING) {
         try {
+          // Recover old pending orders that were created before the address was saved at intake.
+          String email = o.getRecipientEmail();
+          if (email == null) email = recipientEmail(o.getMemberId());
           var reserved =
               product.reserve(
                   o.getReservationId(),
                   token,
                   new ProductFeign.Request(o.getProductId(), o.getQuantity()));
-          var recipient = member.email(o.getMemberId(), token);
-          tx.prepare(id, lease, reserved, recipient.email());
+          tx.prepare(id, lease, reserved, email);
         } catch (Exception failure) {
           tx.compensate(id, lease); // 확보 응답이 유실됐어도 release tombstone으로 지연 요청을 막는다.
           product.release(o.getReservationId(), token);

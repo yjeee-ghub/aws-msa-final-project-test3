@@ -26,11 +26,15 @@ public class MemberService {
         if ("admin".equalsIgnoreCase(memberSaveReqDto.getLoginId())) {
             throw new IllegalArgumentException("관리자 전용 아이디입니다.");
         }
+        String email = memberSaveReqDto.getEmail();
+        if (email == null || !email.matches("[^\\s@]+@[^\\s@]+\\.[^\\s@]+")) {
+            throw new IllegalArgumentException("주문 안내를 받을 이메일 주소를 올바르게 입력해주세요.");
+        }
         if(memberRepository.findByLoginId(memberSaveReqDto.getLoginId()).isPresent()){
             throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
         }
 
-        if(memberRepository.findByEmail(memberSaveReqDto.getEmail()).isPresent()){
+        if(memberRepository.findByEmail(email).isPresent()){
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
 

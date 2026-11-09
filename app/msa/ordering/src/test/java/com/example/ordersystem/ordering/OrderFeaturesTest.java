@@ -66,13 +66,29 @@ class OrderFeaturesTest {
   }
 
   @Test
-  void failedMemberLookupCompensatesReservedStock() {
+  void failedMemberLookupDoesNotCreateOrderOrReserveStock() {
     when(member.email(anyLong(), anyString())).thenThrow(new RuntimeException("unavailable"));
-    var o = service.create(dto(), 7L, "request-key-00002");
-    assertEquals(OrderStatus.FAILED, o.getOrderStatus());
+    assertThrows(RuntimeException.class, () -> service.create(dto(), 7L, "request-key-00002"));
+    assertEquals(0, orders.count());
     assertEquals(0, events.count());
-    verify(product).release(eq(o.getReservationId()), anyString());
-    verify(product, never()).confirm(anyString(), anyString());
+    verifyNoInteractions(product);
+  }
+
+  @Test
+  void invalidEmailDoesNotCreateOrderOrReserveStockAndSameKeyCanBeRetried() {
+    String key = "request-key-bad-email";
+    when(member.email(anyLong(), anyString()))
+        .thenReturn(new MemberFeign.Email("guest@localhost"))
+        .thenReturn(new MemberFeign.Email("guest@example.com"));
+    var error = assertThrows(IllegalArgumentException.class, () -> service.create(dto(), 7L, key));
+    assertTrue(error.getMessage().contains("이메일"));
+    assertEquals(0, orders.count());
+    verifyNoInteractions(product);
+
+    var order = service.create(dto(), 7L, key);
+    assertEquals(OrderStatus.ORDERED, order.getOrderStatus());
+    assertEquals("guest@example.com", order.getRecipientEmail());
+    assertEquals(1, orders.count());
   }
 
   @Test
@@ -86,8 +102,8 @@ class OrderFeaturesTest {
 
   @Test
   void compensationFailureIsDurableAndRecoveryDoesNotReserveAgain() {
-    when(member.email(anyLong(), anyString()))
-        .thenThrow(new RuntimeException("member unavailable"));
+    when(product.reserve(anyString(), anyString(), any()))
+        .thenThrow(new RuntimeException("reserve response lost"));
     when(product.release(anyString(), anyString()))
         .thenThrow(new RuntimeException("release unavailable"))
         .thenReturn(null);

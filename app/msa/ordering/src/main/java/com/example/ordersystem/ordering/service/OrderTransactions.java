@@ -21,7 +21,8 @@ public class OrderTransactions {
   }
 
   @Transactional
-  public Ordering create(Long member, OrderCreateDto dto, String key, String reservation) {
+  public Ordering create(
+      Long member, OrderCreateDto dto, String key, String reservation, String recipientEmail) {
     return orders.saveAndFlush(
         Ordering.builder()
             .memberId(member)
@@ -29,6 +30,7 @@ public class OrderTransactions {
             .quantity(dto.getProductCount())
             .requestKey(key)
             .reservationId(reservation)
+            .recipientEmail(recipientEmail)
             .orderStatus(OrderStatus.PENDING)
             .build());
   }
@@ -52,9 +54,13 @@ public class OrderTransactions {
 
   @Transactional
   public void prepare(Long id, String token, ProductFeign.Result product, String email) {
+    owned(id, token).prepare(product.productName(), product.unitPrice(), requireRecipientEmail(email));
+  }
+
+  static String requireRecipientEmail(String email) {
     if (email == null || !email.matches("[^\\s@]+@[^\\s@]+\\.[^\\s@]+"))
-      throw new IllegalArgumentException("Invalid member email");
-    owned(id, token).prepare(product.productName(), product.unitPrice(), email);
+      throw new IllegalArgumentException("등록한 이메일 주소를 확인해주세요. 주문 안내를 받을 수 있는 주소가 필요합니다.");
+    return email;
   }
 
   @Transactional

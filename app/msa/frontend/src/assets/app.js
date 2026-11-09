@@ -305,6 +305,10 @@ function addToCart(product, quantity) {
 // 기존 주문 API를 상품별로 호출한다. 성공한 상품만 제거하고 실패한 상품은 보존한다.
 async function checkoutCart() {
   const cart = readCart();
+  const email = getAuth()?.email;
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { succeeded: 0, failures: ['등록한 이메일 주소를 확인해주세요. 주문 안내를 받을 수 있는 주소가 필요합니다.'] };
+  }
   let succeeded = 0;
   const failures = [];
   for (const item of cart) {
@@ -331,8 +335,10 @@ async function checkoutCart() {
 
       if (error.data?.status === 'FAILED') {
         saveCart(readCart().map(row => row.id === item.id ? { ...row, requestKey: undefined } : row));
+        failures.push(String(item.name) + ': 주문에 실패했습니다. 예약한 재고는 복구됐습니다.');
+      } else {
+        failures.push(String(item.name) + ': ' + error.message);
       }
-      failures.push(String(item.name) + ': ' + error.message);
     }
   }
   return { succeeded, failures };
@@ -375,7 +381,8 @@ function renderCart() {
     catch { showMessage('cartMessage', '처리 결과를 확인하지 못했습니다. 재주문 전 주문 서비스 로그를 확인해주세요.', 'error'); return; }
     renderCart();
     showMessage('cartMessage',
-      result.succeeded + '개 상품 주문 완료.' + (result.failures.length ? ' 주문하지 못한 상품은 장바구니에 남겼습니다. ' + result.failures.join(' / ') : ''),
+      (result.succeeded ? result.succeeded + '개 상품 주문 완료.' : '주문을 완료하지 못했습니다.') +
+      (result.failures.length ? ' 주문하지 못한 상품은 장바구니에 남겼습니다. ' + result.failures.join(' / ') : ''),
       result.failures.length ? 'error' : 'success');
   };
 }
