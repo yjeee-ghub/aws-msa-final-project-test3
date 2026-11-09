@@ -96,6 +96,7 @@ public class ReservationService {
           var p =
               products
                   .findForStockUpdate(request.productId())
+                  .filter(present -> present.isActive())
                   .orElseThrow(
                       () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
           p.updateStockQuantity(request.quantity());

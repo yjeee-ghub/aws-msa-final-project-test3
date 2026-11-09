@@ -5,10 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    List<Product> findAllByOrderByIdDesc();
+    List<Product> findAllByDeletedAtIsNullOrderByIdDesc();
+
+    Optional<Product> findByIdAndDeletedAtIsNull(Long id);
 
     // 동시 주문에서 같은 재고를 중복 차감하지 않도록 행 잠금을 건다.
     @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)

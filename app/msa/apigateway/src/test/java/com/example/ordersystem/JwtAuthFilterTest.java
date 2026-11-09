@@ -91,6 +91,32 @@ class JwtAuthFilterTest {
   }
 
   @Test
+  void onlyAdminBearerCanEditAndDeleteProducts() {
+    for (var method : java.util.List.of(HttpMethod.PUT, HttpMethod.DELETE)) {
+      String path = "/product-service/product/42";
+      var customer = MockServerWebExchange.from(MockServerHttpRequest.method(method, path)
+          .header("Authorization", "Bearer " + token("USER"))
+          .header("X-User-Role", "ROLE_ADMIN"));
+      filter.filter(customer, ex -> fail("customer must not manage products")).block();
+      assertEquals(HttpStatus.FORBIDDEN, customer.getResponse().getStatusCode());
+
+      var guest = MockServerWebExchange.from(MockServerHttpRequest.method(method, path)
+          .cookie(new HttpCookie("ADMIN_ACCESS_TOKEN", token("ADMIN"))));
+      filter.filter(guest, ex -> fail("cookie must not authorize writes")).block();
+      assertEquals(HttpStatus.UNAUTHORIZED, guest.getResponse().getStatusCode());
+
+      var admin = MockServerWebExchange.from(MockServerHttpRequest.method(method, path)
+          .header("Authorization", "Bearer " + token("ADMIN")));
+      AtomicReference<ServerWebExchange> routed = new AtomicReference<>();
+      filter.filter(admin, ex -> {
+        routed.set(ex);
+        return Mono.empty();
+      }).block();
+      assertEquals("ROLE_ADMIN", routed.get().getRequest().getHeaders().getFirst("X-User-Role"));
+    }
+  }
+
+  @Test
   void identityHeadersAreReplacedAndPublicHeadersRemoved() {
     var exchange =
         MockServerWebExchange.from(

@@ -47,9 +47,9 @@ public class AdminDashboardService {
             // 기존 공용 DB의 집계값만 반환한다. 고객 정보나 비밀번호는 반환하지 않는다.
             return Map.of("status", "ok",
                     "members", db.queryForObject("select count(*) from member", Long.class),
-                    "products", db.queryForObject("select count(*) from product", Long.class),
+                    "products", db.queryForObject("select count(*) from product where deleted_at is null", Long.class),
                     "orders", db.queryForObject("select count(*) from ordering", Long.class),
-                    "stock", db.queryForObject("select coalesce(sum(stock_quantity), 0) from product", Long.class),
+                    "stock", db.queryForObject("select coalesce(sum(stock_quantity), 0) from product where deleted_at is null", Long.class),
                     "tlsEncrypted", !Objects.toString(db.queryForObject(
                             "SELECT VARIABLE_VALUE FROM performance_schema.session_status WHERE VARIABLE_NAME = 'Ssl_cipher'",
                             String.class), "").isBlank());

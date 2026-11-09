@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>상품등록</title>
+  <title>상품 등록·관리</title>
   <link rel="stylesheet" href="/assets/style.css?v=soldesk-v1">
 </head>
 <body>
@@ -21,20 +21,27 @@
 
   <main class="form-page">
     <section class="form-wrap">
-      <h2>상품등록</h2>
-      <div class="form-intro">판매할 상품 정보를 입력하고 이미지를 등록해보세요.</div>
+      <h2>상품 등록·관리</h2>
+      <div class="form-intro">새 상품을 등록하거나 목록에서 상품을 선택해 수정·삭제할 수 있습니다.</div>
       <form id="productForm" enctype="multipart/form-data">
         <div class="field">
+          <label for="productId">관리할 상품</label>
+          <select id="productId" class="btn btn-light">
+            <option value="">새 상품 등록</option>
+          </select>
+        </div>
+        <div class="field">
           <label for="name">상품명</label>
-          <input id="name" name="name" type="text" required>
+          <input id="name" name="name" type="text" maxlength="255" required>
         </div>
         <div class="field">
           <label for="category">카테고리</label>
-          <input id="category" name="category" type="text" placeholder="예: 의류, 전자기기">
+          <input id="category" name="category" type="text" maxlength="255" placeholder="예: 꽃다발, 반려식물">
         </div>
         <div class="field">
           <label for="imageFile">상품 이미지 파일</label>
           <input id="imageFile" name="imageFile" type="file" accept="image/*" required>
+          <small id="imageHint" hidden>파일을 선택하지 않으면 현재 이미지를 유지합니다.</small>
         </div>
         <div class="field">
           <label for="price">가격</label>
@@ -46,13 +53,14 @@
         </div>
         <div class="field">
           <label for="description">상품설명</label>
-          <textarea id="description" name="description"></textarea>
+          <textarea id="description" name="description" maxlength="1000"></textarea>
         </div>
         <div class="form-actions">
-          <button class="btn btn-primary" type="submit">상품등록</button>
+          <button class="btn btn-primary" id="saveProduct" type="submit">상품등록</button>
+          <button class="btn btn-danger" id="deleteProduct" type="button" hidden>상품 삭제</button>
           <a class="btn btn-light" href="/">메인으로</a>
         </div>
-        <div id="productMessage" style="display:none;"></div>
+        <div id="productMessage" role="status" style="display:none;"></div>
       </form>
     </section>
   </main>
@@ -60,38 +68,111 @@
   <script src="/assets/app.js?v=demo-v3-fixed"></script>
   <script>
     renderHeader();
-    guardLogin('/login.html');
+    const form = document.getElementById('productForm');
+    const selection = document.getElementById('productId');
+    const saveButton = document.getElementById('saveProduct');
+    const deleteButton = document.getElementById('deleteProduct');
+    const catalog = '/product-service/product';
+    let editing = null;
 
-    document.getElementById('productForm').addEventListener('submit', async function (event) {
-      event.preventDefault();
+    function setBusy(busy) {
+      Array.from(form.elements).forEach(field => { field.disabled = busy; });
+    }
 
-      const imageFile = document.getElementById('imageFile').files[0];
-      if (!imageFile) {
-        showMessage('productMessage', '상품 이미지를 선택해주세요.', 'error');
+    function fillForm(product) {
+      editing = product;
+      for (const name of ['name', 'category', 'price', 'stockQuantity', 'description']) {
+        form.elements.namedItem(name).value = product?.[name] ?? '';
+      }
+      const image = form.elements.namedItem('imageFile');
+      image.value = '';
+      image.required = !product;
+      document.getElementById('imageHint').hidden = !product;
+      saveButton.textContent = product ? '수정 저장' : '상품등록';
+      deleteButton.hidden = !product;
+    }
+
+    async function loadProductsForManagement() {
+      setBusy(true);
+      try {
+        const products = await apiRequest(catalog + '/list', { cache: 'no-store' });
+        for (const product of products) {
+          selection.add(new Option('#' + product.id + ' · ' + product.name, product.id));
+        }
+      } catch (error) {
+        showMessage('productMessage', '상품 목록을 불러오지 못했습니다. 새로고침해서 다시 시도해주세요.', 'error');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    selection.addEventListener('change', async () => {
+      document.getElementById('productMessage').style.display = 'none';
+      if (!selection.value) {
+        fillForm(null);
         return;
       }
-
-      const formData = new FormData();
-      formData.append('name', document.getElementById('name').value);
-      formData.append('category', document.getElementById('category').value);
-      formData.append('price', document.getElementById('price').value);
-      formData.append('stockQuantity', document.getElementById('stockQuantity').value);
-      formData.append('description', document.getElementById('description').value);
-      formData.append('imageFile', imageFile);
-
+      setBusy(true);
       try {
-        await apiRequest('/product-service/product/create', {
-          method: 'POST',
-          body: formData
-        });
-        showMessage('productMessage', '상품이 등록되었습니다. 메인페이지에서 확인하세요.', 'success');
-        setTimeout(function () {
-          window.location.href = '/';
-        }, 700);
+        fillForm(await apiRequest(catalog + '/' + selection.value, { cache: 'no-store' }));
       } catch (error) {
-        showMessage('productMessage', '상품 등록에 실패했습니다. 입력값과 로그인 상태를 확인해주세요.', 'error');
+        selection.value = '';
+        fillForm(null);
+        showMessage('productMessage', error.message, 'error');
+      } finally {
+        setBusy(false);
       }
     });
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const data = new FormData(form);
+      if (!form.elements.namedItem('imageFile').files.length) data.delete('imageFile');
+      if (editing) {
+        if (Number(data.get('stockQuantity')) === editing.stockQuantity) data.delete('stockQuantity');
+        else data.set('expectedStockQuantity', editing.stockQuantity);
+      }
+      setBusy(true);
+      let navigating = false;
+      try {
+        if (editing) {
+          const updated = await apiRequest(catalog + '/' + editing.id, { method: 'PUT', body: data });
+          selection.options[selection.selectedIndex].text = '#' + updated.id + ' · ' + updated.name;
+          fillForm(updated);
+          showMessage('productMessage', '상품 정보를 수정했습니다.', 'success');
+        } else {
+          await apiRequest(catalog + '/create', { method: 'POST', body: data });
+          showMessage('productMessage', '상품이 등록되었습니다. 메인페이지에서 확인하세요.', 'success');
+          navigating = true;
+          setTimeout(() => { window.location.href = '/'; }, 700);
+        }
+      } catch (error) {
+        const message = error.status === 409
+          ? '재고가 변경됐습니다. 상품을 다시 선택한 뒤 수정해주세요.'
+          : error.message;
+        showMessage('productMessage', message, 'error');
+      } finally {
+        if (!navigating) setBusy(false);
+      }
+    });
+
+    deleteButton.addEventListener('click', async () => {
+      if (!editing || !confirm('"' + editing.name + '" 상품을 판매 목록에서 삭제할까요? 기존 주문 내역은 유지됩니다.')) return;
+      setBusy(true);
+      try {
+        await apiRequest(catalog + '/' + editing.id, { method: 'DELETE' });
+        selection.remove(selection.selectedIndex);
+        selection.value = '';
+        fillForm(null);
+        showMessage('productMessage', '상품을 판매 목록에서 삭제했습니다.', 'success');
+      } catch (error) {
+        showMessage('productMessage', error.message, 'error');
+      } finally {
+        setBusy(false);
+      }
+    });
+
+    if (guardLogin('/login.html')) loadProductsForManagement();
   </script>
 </body>
 </html>

@@ -2,6 +2,7 @@ package com.example.ordersystem.product.domain;
 
 import com.example.ordersystem.common.domain.BaseTimeEntity;
 import jakarta.persistence.*;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,6 +36,30 @@ public class Product extends BaseTimeEntity {
 
   @Column(nullable = false)
   private Long memberId;
+
+  private Instant deletedAt;
+
+  public boolean isActive() {
+    return deletedAt == null;
+  }
+
+  public void removeFromCatalog() {
+    if (isActive()) {
+      deletedAt = Instant.now();
+    }
+  }
+
+  public void edit(
+      String name, String category, String description, int price, Integer stock, String imageUrl) {
+    this.name = name;
+    this.category = category;
+    this.description = description;
+    this.price = price;
+    this.imageUrl = imageUrl;
+    if (stock != null) {
+      this.stockQuantity = stock;
+    }
+  }
 
   public void restoreStock(int quantity) {
     this.stockQuantity = Math.addExact(this.stockQuantity, quantity);

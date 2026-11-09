@@ -41,10 +41,14 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             .build();
     if (path.contains("/internal/")) return reject(exchange, HttpStatus.FORBIDDEN);
     if (isPublic(path, method)) return chain.filter(clean);
-    // 외부에서 재고를 직접 변경하지 못하게 막는다.
+    boolean adminProductWrite =
+        (HttpMethod.POST.equals(method) && path.equals("/product-service/product/create"))
+            || ((HttpMethod.PUT.equals(method) || HttpMethod.DELETE.equals(method))
+                && path.matches("/product-service/product/[0-9]+"));
+    // 상품 관리 요청만 외부에 열고 내부 재고 API는 계속 차단한다.
     if (path.startsWith("/product-service/")
         && !HttpMethod.GET.equals(method)
-        && !path.equals("/product-service/product/create")) {
+        && !adminProductWrite) {
       return reject(exchange, HttpStatus.FORBIDDEN);
     }
     try {
@@ -70,7 +74,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
       boolean adminOnly =
           path.equals("/member-service/member/admin-check")
               || path.startsWith("/member-service/member/admin/")
-              || path.equals("/product-service/product/create");
+              || adminProductWrite;
       if (adminOnly && !"ADMIN".equals(role)) return reject(exchange, HttpStatus.FORBIDDEN);
       return chain.filter(
           clean

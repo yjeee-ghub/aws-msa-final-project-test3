@@ -1,10 +1,12 @@
 package com.example.ordersystem.product.controller;
 
 import com.example.ordersystem.product.domain.Product;
+import com.example.ordersystem.product.dto.ProductEditDto;
 import com.example.ordersystem.product.dto.ProductRegisterDto;
 import com.example.ordersystem.product.dto.ProductResDto;
 import com.example.ordersystem.product.dto.ProductUpdateStockDto;
 import com.example.ordersystem.product.service.ProductService;
+import jakarta.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -34,6 +36,12 @@ public class ProductController {
     this.productService = productService;
   }
 
+  private void requireAdmin(String role) {
+    if (!"ROLE_ADMIN".equals(role)) {
+      throw new org.springframework.web.server.ResponseStatusException(HttpStatus.FORBIDDEN);
+    }
+  }
+
   @PostMapping(
       value = "/create",
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -42,9 +50,7 @@ public class ProductController {
       @RequestHeader("X-User-Id") String userId,
       @RequestHeader("X-User-Role") String role)
       throws IOException {
-    if (!"ROLE_ADMIN".equals(role)) {
-      throw new org.springframework.web.server.ResponseStatusException(HttpStatus.FORBIDDEN);
-    }
+    requireAdmin(role);
     Product product = productService.productCreate(dto, userId);
     return new ResponseEntity<>(product.getId(), HttpStatus.CREATED);
   }
@@ -59,6 +65,24 @@ public class ProductController {
   public ResponseEntity<?> productDetail(@PathVariable Long id) {
     ProductResDto productResDto = productService.productDetail(id);
     return new ResponseEntity<>(productResDto, HttpStatus.OK);
+  }
+
+  @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ProductResDto productEdit(
+      @PathVariable Long id,
+      @Valid @ModelAttribute ProductEditDto dto,
+      @RequestHeader("X-User-Role") String role)
+      throws IOException {
+    requireAdmin(role);
+    return productService.productEdit(id, dto);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> productDelete(
+      @PathVariable Long id, @RequestHeader("X-User-Role") String role) {
+    requireAdmin(role);
+    productService.productDelete(id);
+    return ResponseEntity.noContent().build();
   }
 
   @PutMapping("/updatestock")
