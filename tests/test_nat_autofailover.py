@@ -301,6 +301,17 @@ class StatusTests(unittest.TestCase):
         self.paths['rt-a'] = 'nc'; self.records['a'].update(routeAfter='nc')
         self.records['a']['samples']['app'] = sample(ip='2.2.2.2')
         self.assertEqual(self.status()['bypassRoutes'], {'rt-a': 'nc'})
+    def test_missing_optional_control_item_can_be_a_blank_cli_response(self):
+        def aws(service, op, *args, **kwargs):
+            if op == 'get-item':
+                self.assertTrue(kwargs.get('empty'))
+                key = json.loads(args[args.index('--key') + 1])
+                if key['id']['S'] == 'control':
+                    return {}
+            return self.aws(service, op, *args, **kwargs)
+
+        result = ops.status(SimpleNamespace(aws=aws), self.cfg, now=self.now)
+        self.assertEqual(set(result['zones']), {'a', 'c'})
     def test_stale_dry_unknown_or_mismatched_sample_does_not_authorize_bypass(self):
         self.now = 900
         with self.assertRaisesRegex(ValueError, 'stale'): self.status()

@@ -74,7 +74,7 @@ def status(runner, config, *, now=None):
     if rule['State'] != 'ENABLED' or concurrency.get('ReservedConcurrentExecutions') != 1:
         raise ValueError('NAT controller disabled/paused; explicitly resume before basic verification')
     control = runner.aws('dynamodb', 'get-item', '--table-name', config['table'], '--consistent-read',
-                         '--key', json.dumps({'id': {'S': 'control'}})).get('Item', {})
+                         '--key', json.dumps({'id': {'S': 'control'}}), empty=True).get('Item', {})
     if control.get('paused', {}).get('BOOL') is True:
         raise ValueError('NAT controller explicitly paused in state')
     routes = runner.aws('ec2', 'describe-route-tables', '--route-table-ids',
@@ -86,7 +86,7 @@ def status(runner, config, *, now=None):
     result = {'enabled': True, 'bypassRoutes': {}, 'zones': {}}
     for zone, z in config['zones'].items():
         item = runner.aws('dynamodb', 'get-item', '--table-name', config['table'], '--consistent-read',
-                          '--key', json.dumps({'id': {'S': zone}})).get('Item', {})
+                          '--key', json.dumps({'id': {'S': zone}}), empty=True).get('Item', {})
         observed = int(item.get('last_observed', {}).get('N', '0'))
         if not 0 <= now - observed <= 180:
             raise ValueError('NAT controller observation stale/not ready: ' + zone)
