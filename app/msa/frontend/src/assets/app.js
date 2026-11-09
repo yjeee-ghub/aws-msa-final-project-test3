@@ -162,18 +162,25 @@ async function loadProducts() {
   }
 
   try {
-    const products = await apiRequest('/product-service/product/list', { method: 'GET', headers: {} });
+    const catalog = await apiRequest('/product-service/product/list', { method: 'GET', headers: {} });
     // 프록시 오류로 HTML 등이 반환돼도 상품 개수로 잘못 표시하지 않음
-    if (!Array.isArray(products)) {
+    if (!Array.isArray(catalog)) {
       throw new Error('상품 목록 응답 형식이 올바르지 않습니다.');
     }
+    const categories = new Map([
+      ['bouquets', /꽃다발/],
+      ['gifts', /꽃바구니|화병|리스|유리돔|드라이|프리저브드/],
+      ['plants', /화분|식물/]
+    ]);
+    const filter = categories.get(getQueryParam('category'));
+    const products = filter ? catalog.filter(product => filter.test(product.category || '')) : catalog;
     const countEl = document.getElementById('productCount');
     if (countEl) {
       countEl.textContent = `총 ${products.length}개의 상품`;
     }
 
     if (!products.length) {
-      productList.innerHTML = '<div class="empty">등록된 상품이 없습니다. 첫 상품을 등록해보세요.</div>';
+      productList.innerHTML = '<div class="empty">표시할 상품이 없습니다.</div>';
       return;
     }
 
@@ -185,13 +192,14 @@ async function loadProducts() {
             ${buildStockBadge(product.stockQuantity)}
           </div>
           <div class="card-body">
+            <div class="card-head">
+              <div class="card-title">${escapeHtml(product.name)}</div>
+              <div class="card-price">${formatPrice(product.price)}</div>
+            </div>
             <div class="card-meta-row">
               <span class="card-meta">${escapeHtml(product.category || '전체 카테고리')}</span>
+              <span class="card-sub">재고 ${escapeHtml(product.stockQuantity)}개</span>
             </div>
-            <div class="card-title">${escapeHtml(product.name)}</div>
-            <div class="card-price">${formatPrice(product.price)}</div>
-            <div class="card-sub">재고 ${escapeHtml(product.stockQuantity)}개</div>
-            <div class="card-description">${escapeHtml(product.description || '등록된 상품 설명이 없습니다.')}</div>
           </div>
         </a>
       `;
@@ -228,7 +236,10 @@ async function loadProductDetail() {
 
   try {
     const product = await apiRequest(`/product-service/product/${encodeURIComponent(productId)}`, { method: 'GET', headers: {} });
+    const quantityLimit = Math.min(999, product.stockQuantity);
+    const soldOut = quantityLimit < 1;
     target.innerHTML = `
+      <nav class="detail-breadcrumb" aria-label="현재 위치"><a href="/#productSection">전체 상품</a> / ${escapeHtml(product.category || '상품')} / <strong>${escapeHtml(product.name)}</strong></nav>
       <section class="detail-card">
         <div class="detail-image-wrap">
           <img class="detail-image" src="${escapeHtml(getImageUrl(product.imageUrl))}" alt="${escapeHtml(product.name)}" onerror="this.onerror=null;this.src='/assets/product-placeholder.svg'">
@@ -237,22 +248,45 @@ async function loadProductDetail() {
           <div class="detail-category">${escapeHtml(product.category || '전체 카테고리')}</div>
           <h1 class="detail-title">${escapeHtml(product.name)}</h1>
           <div class="detail-price">${formatPrice(product.price)}</div>
-          <div class="detail-stock" id="detailStock">재고: ${escapeHtml(product.stockQuantity)}개</div>
           <p class="detail-description">${escapeHtml(product.description || '상품 설명이 없습니다.')}</p>
-          <label class="quantity-field" for="productQuantity">수량
-            <input id="productQuantity" type="number" min="1" max="${Math.min(999, product.stockQuantity)}" value="1" ${product.stockQuantity < 1 ? 'disabled' : ''}>
-          </label>
-          <div class="detail-actions">
-            <button class="btn btn-primary btn-large" id="purchaseBtn" type="button" ${product.stockQuantity < 1 ? 'disabled' : ''}>장바구니 담기</button>
-            <a class="btn btn-light btn-large" href="/">메인으로</a>
+          <div class="detail-inventory">
+            <div><span class="inventory-label">남은 재고</span><div class="detail-stock" id="detailStock">${Number(product.stockQuantity).toLocaleString('ko-KR')}<small>개</small></div></div>
+            <div>
+              <label class="inventory-label" for="productQuantity">구매 수량</label>
+              <div class="quantity-stepper">
+                <button id="quantityDown" type="button" aria-label="수량 줄이기" disabled>−</button>
+                <input id="productQuantity" type="number" min="${soldOut ? 0 : 1}" max="${quantityLimit}" step="1" value="${soldOut ? 0 : 1}" ${soldOut ? 'disabled' : ''}>
+                <button id="quantityUp" type="button" aria-label="수량 늘리기" ${quantityLimit < 2 ? 'disabled' : ''}>+</button>
+              </div>
+            </div>
           </div>
-          <div id="purchaseMessage" style="display:none;"></div>
+          <div class="detail-actions">
+            <button class="btn btn-primary btn-large" id="purchaseBtn" type="button" ${soldOut ? 'disabled' : ''}>${soldOut ? '품절' : '장바구니 담기'} <span aria-hidden="true">↗</span></button>
+          </div>
+          <p class="detail-note"><span>상품 수량은 재고 내에서 선택할 수 있어요.</span><a href="/#productSection">상품 목록으로</a></p>
+          <div id="purchaseMessage" role="status" style="display:none;"></div>
         </div>
       </section>
     `;
 
     const purchaseBtn = document.getElementById('purchaseBtn');
     if (purchaseBtn) {
+      const input = document.getElementById('productQuantity');
+      const down = document.getElementById('quantityDown');
+      const up = document.getElementById('quantityUp');
+      function updateQuantityButtons() {
+        down.disabled = soldOut || !(input.valueAsNumber > 1);
+        up.disabled = soldOut || input.valueAsNumber >= quantityLimit;
+      }
+      input.addEventListener('input', updateQuantityButtons);
+      down.addEventListener('click', () => {
+        input.value = Math.max(1, (input.valueAsNumber || 1) - 1);
+        updateQuantityButtons();
+      });
+      up.addEventListener('click', () => {
+        input.value = Math.min(quantityLimit, (input.valueAsNumber || 0) + 1);
+        updateQuantityButtons();
+      });
       purchaseBtn.addEventListener('click', async function () {
         if (!guardLogin('/login.html')) {
           return;
@@ -264,8 +298,8 @@ async function loadProductDetail() {
         }
 
         try {
-          const quantity = Number(document.getElementById('productQuantity').value);
-          if (!Number.isInteger(quantity) || quantity < 1 || quantity > Math.min(999, product.stockQuantity)) {
+          const quantity = input.valueAsNumber;
+          if (!Number.isInteger(quantity) || quantity < 1 || quantity > quantityLimit) {
             throw new Error('재고 내에서 1~999개를 선택해주세요.');
           }
           addToCart(product, quantity);

@@ -1,4 +1,5 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>주문 내역 · Soldesk Mall</title><link rel="stylesheet" href="/assets/style.css?v=soldesk-v1"></head>
-<body><header class="header"><div class="container"><a href="/" class="brand">Soldesk <span class="brand-accent">Mall</span></a><nav class="nav"><div id="userBox"></div></nav></div></header>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>주문 내역 · Solflower</title><link rel="stylesheet" href="/assets/style.css?v=soldesk-v1">
+  <link rel="stylesheet" href="/assets/solflower.css?v=1"></head>
+<body><header class="header"><div class="container"><a href="/" class="brand">Solflower</a><nav class="nav"><div id="userBox"></div></nav></div></header>
 <main class="container utility-page"><h1>내 주문 내역</h1><p>처리 중인 주문은 잠시 후 새로고침하여 확인하세요. 실패 주문은 재고 해제 후 실패로 표시됩니다.</p><button class="btn" id="refresh" type="button">새로고침</button><div id="orders" role="status"></div></main>
 <script src="/assets/app.js?v=demo-v3-fixed"></script><script>renderHeader();if(guardLogin())renderOrders();document.getElementById('refresh').onclick=renderOrders;</script></body></html>

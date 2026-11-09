@@ -3,15 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>상품 상세</title>
+  <title>상품 상세 · Solflower</title>
   <link rel="stylesheet" href="/assets/style.css?v=soldesk-v1">
+  <link rel="stylesheet" href="/assets/solflower.css?v=1">
 </head>
-<body>
+<body class="store-detail">
   <header class="header">
     <div class="container">
-      <a href="/" class="brand">Soldesk <span class="brand-accent">Mall</span></a>
+      <a href="/" class="brand">Solflower</a>
       <nav class="nav">
-        <a class="btn btn-light" href="/">메인</a>
+        <a class="btn btn-light" href="/#productSection">전체 상품</a>
         <a class="btn btn-primary" data-admin-only style="display:none;" href="/product-create.html">상품등록</a>
         <a class="btn btn-secondary" data-guest-only href="/login.html">로그인</a>
         <a class="btn btn-secondary" data-guest-only href="/signup.html">회원가입</a>
@@ -24,7 +25,7 @@
     <div id="productDetail"></div>
   </main>
 
-  <script src="/assets/app.js?v=demo-v3-fixed"></script>
+  <script src="/assets/app.js?v=solflower-v2"></script>
   <script>
     renderHeader();
     loadProductDetail();

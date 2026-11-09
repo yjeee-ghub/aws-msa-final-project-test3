@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>상품 등록·관리</title>
   <link rel="stylesheet" href="/assets/style.css?v=soldesk-v1">
+  <link rel="stylesheet" href="/assets/solflower.css?v=1">
 </head>
 <body>
   <header class="header">
     <div class="container">
-      <a href="/" class="brand">Soldesk <span class="brand-accent">Mall</span></a>
+      <a href="/" class="brand">Solflower</a>
       <nav class="nav">
         <a class="btn btn-light" href="/">메인</a>
         <a class="btn btn-secondary" data-guest-only href="/login.html">로그인</a>
@@ -98,6 +99,11 @@
         const products = await apiRequest(catalog + '/list', { cache: 'no-store' });
         for (const product of products) {
           selection.add(new Option('#' + product.id + ' · ' + product.name, product.id));
+        }
+        const productId = getQueryParam('id');
+        if (products.some(product => String(product.id) === productId)) {
+          selection.value = productId;
+          fillForm(await apiRequest(catalog + '/' + productId, { cache: 'no-store' }));
         }
       } catch (error) {
         showMessage('productMessage', '상품 목록을 불러오지 못했습니다. 새로고침해서 다시 시도해주세요.', 'error');

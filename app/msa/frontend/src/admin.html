@@ -2,21 +2,21 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>운영 대시보드 · Soldesk Mall</title>
+  <title>운영 대시보드 · Solflower</title>
   <link rel="stylesheet" href="/assets/style.css?v=soldesk-v1">
-  <link rel="stylesheet" href="/assets/admin.css?v=4">
+  <link rel="stylesheet" href="/assets/solflower.css?v=1">
+  <link rel="stylesheet" href="/assets/admin.css?v=5">
 </head>
 <body>
   <header class="header"><div class="container">
-    <a href="/" class="brand">Soldesk <span class="brand-accent">Mall</span></a>
+    <a href="/" class="brand">Solflower</a>
     <nav class="nav"><a class="btn btn-light" href="/">스토어</a><div id="userBox"></div></nav>
   </div></header>
   <main class="container admin-dashboard">
     <section class="dashboard-hero">
-      <div><div class="dashboard-eyebrow">SOLDESK / OPERATIONS</div>
+      <div><div class="dashboard-eyebrow">SOLFLOWER / OPERATIONS</div>
         <h1>스토어 운영 현황<span>.</span></h1>
-        <p>상품과 주문, 서비스 상태를 한눈에 확인하세요.</p>
-        <span class="dashboard-version">관리자 대시보드 · V4</span>
+        <p>회원과 주문을 확인하고 판매 가능한 재고를 관리하세요.</p>
       </div>
       <div class="dashboard-refresh">
         <span class="status-pill neutral" id="overallStatus">상태 확인 중</span>
@@ -30,11 +30,32 @@
       <div class="dashboard-section-head"><div><span class="dashboard-eyebrow">STORE SNAPSHOT</span><h2 id="storeTitle">스토어 요약</h2></div>
         <span class="status-pill neutral" id="dbStatus">DB 확인 중</span>
       </div>
-      <div class="summary-grid">
-        <article class="summary-card"><span class="metric-label">전체 회원</span><strong id="membersCount">—</strong><span class="metric-caption">가입된 회원 수</span></article>
-        <article class="summary-card"><span class="metric-label">등록 상품</span><strong id="productsCount">—</strong><span class="metric-caption">현재 등록된 상품 수</span></article>
-        <article class="summary-card"><span class="metric-label">접수 주문</span><strong id="ordersCount">—</strong><span class="metric-caption">상품별 주문 기록 수</span></article>
-        <article class="summary-card"><span class="metric-label">전체 재고</span><strong id="stockCount">—</strong><span class="metric-caption">모든 상품의 남은 수량</span></article>
+      <div class="summary-grid" id="storeSummary">
+        <button type="button" class="summary-card" data-view="members" aria-controls="adminList" aria-expanded="false"><span class="metric-label">전체 회원</span><strong id="membersCount">—</strong><span class="metric-caption">회원 목록 보기 ↗</span></button>
+        <button type="button" class="summary-card" data-view="products" aria-controls="adminList" aria-expanded="false"><span class="metric-label">등록 상품</span><strong id="productsCount">—</strong><span class="metric-caption">상품 및 재고 관리 ↗</span></button>
+        <button type="button" class="summary-card" data-view="orders" aria-controls="adminList" aria-expanded="false"><span class="metric-label">접수 주문</span><strong id="ordersCount">—</strong><span class="metric-caption">전체 주문 기록 보기 ↗</span></button>
+        <button type="button" class="summary-card" data-view="stock" aria-controls="adminList" aria-expanded="false"><span class="metric-label">전체 재고</span><strong id="stockCount">—</strong><span class="metric-caption">재고 적은 상품부터 보기 ↗</span></button>
+      </div>
+    </section>
+
+    <section class="admin-list" id="adminList" aria-labelledby="adminListTitle" hidden>
+      <div class="admin-list-head">
+        <div><h2 id="adminListTitle" tabindex="-1"></h2><p id="adminListIntro"></p></div>
+        <button class="btn btn-light" type="button" id="closeAdminList">목록 닫기</button>
+      </div>
+      <div class="admin-list-controls" id="inventoryControls" hidden>
+        <label>상품 검색 <input id="inventorySearch" type="search" placeholder="상품명 또는 카테고리"></label>
+        <label>재고 상태 <select id="inventoryFilter">
+          <option value="all">전체</option><option value="low">재고 부족 (1~5개)</option><option value="out">품절</option>
+        </select></label>
+        <a class="btn btn-primary" href="/product-create.html">상품 등록</a>
+      </div>
+      <p id="adminListMessage" class="admin-list-message" role="status"></p>
+      <div id="adminTable" class="admin-table-wrap" tabindex="0" aria-label="목록 표"></div>
+      <div class="admin-pagination" id="adminPagination" hidden>
+        <button class="btn btn-light" type="button" id="adminPrev">이전</button>
+        <span id="adminPage"></span>
+        <button class="btn btn-light" type="button" id="adminNext">다음</button>
       </div>
     </section>
 
@@ -62,8 +83,8 @@
     <a class="product-shortcut" href="/product-create.html"><div><span class="dashboard-eyebrow">MANAGE YOUR STORE</span><h2>새 상품을 등록할까요?</h2><p>상품 정보와 이미지, 판매할 재고를 추가하세요.</p></div><span class="btn btn-primary">상품 등록 ＋</span></a>
     <p class="dashboard-footnote">1분마다 자동 갱신합니다. 확인하지 못한 값은 —로 표시하며, 운영 도구의 개별 로그인은 유지됩니다.</p>
   </main>
-  <script src="/assets/app.js?v=demo-v3-fixed"></script>
-  <script src="/assets/admin.js?v=4"></script>
+  <script src="/assets/app.js?v=solflower-v2"></script>
+  <script src="/assets/admin.js?v=5"></script>
 </body>
 </html>
 

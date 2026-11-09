@@ -1,90 +1,58 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Soldesk Mall</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="계절을 담은 꽃다발과 일상에 두고 싶은 식물, Solflower.">
+  <title>Solflower · 꽃이 필요한 모든 순간</title>
   <link rel="stylesheet" href="/assets/style.css?v=soldesk-v1">
+  <link rel="stylesheet" href="/assets/solflower.css?v=1">
 </head>
-<body>
-  <div class="top-banner">단 하루 특가 · 인기 상품 무료배송 이벤트 진행 중</div>
-
+<body class="store-home">
   <header class="header">
-    <div class="container">
-      <a href="/" class="brand">Soldesk <span class="brand-accent">Mall</span></a>
+    <div class="container storefront-nav">
+      <a class="brand" href="/" aria-label="Solflower 홈">Solflower</a>
+      <nav class="shop-categories" aria-label="상품 탐색">
+        <a href="/#productSection" data-category="">전체 상품</a>
+        <a href="/?category=bouquets#productSection" data-category="bouquets">꽃다발</a>
+        <a href="/?category=gifts#productSection" data-category="gifts">플라워 기프트</a>
+        <a href="/?category=plants#productSection" data-category="plants">반려식물</a>
+      </nav>
       <nav class="nav" aria-label="회원 메뉴">
-        <a class="btn btn-secondary" data-guest-only href="/login.html">로그인</a>
-        <a class="btn btn-secondary" data-guest-only href="/signup.html">회원가입</a>
-        <a class="btn btn-primary" data-admin-only style="display:none;" href="/product-create.html">상품등록</a>
+        <a class="btn btn-light" data-guest-only href="/login.html">로그인</a>
+        <a class="btn btn-light" data-guest-only href="/signup.html">회원가입</a>
+        <a class="btn btn-primary" data-admin-only style="display:none" href="/product-create.html">상품 등록</a>
         <div id="userBox"></div>
       </nav>
     </div>
   </header>
-
   <main class="container">
-    <section class="hero hero-commerce">
-      <div class="hero-panel hero-promo">
-        <div class="hero-label-row">
-          <span class="hero-kicker">SPRING COLLECTION</span>
-          <span class="hero-badge">오늘 출발</span>
-        </div>
-        <h1>지금 가장 많이 찾는<br>인기 상품 모음</h1>
-        <p>새로 등록된 상품부터 많이 보는 인기 상품까지 한눈에 확인해보세요.</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="#productSection">상품 보러가기</a>
-          <a class="btn btn-light" data-guest-only href="/signup.html">신규 회원 혜택 보기</a>
-          <a class="btn btn-light" data-admin-only style="display:none;" href="/product-create.html">새 상품 등록</a>
-        </div>
-        <div class="hero-tags">
-          <span>#무료배송</span>
-          <span>#베스트상품</span>
-          <span>#신상입고</span>
-          <span>#빠른배송</span>
-        </div>
-      </div>
-
-      <div class="hero-side hero-side-commerce">
-        <article class="mini-card promo-card dark">
-          <div class="mini-card-overline">MEMBER BENEFIT</div>
-          <div class="mini-card-title">신규 회원 쿠폰</div>
-          <div class="mini-card-text">첫 구매 고객 전용 혜택으로 더 가볍게 시작하세요.</div>
-        </article>
-        <article class="mini-card promo-card light">
-          <div class="mini-card-overline">CURATION</div>
-          <div class="mini-card-title">지금 많이 보는 상품</div>
-          <div class="mini-card-text">실시간으로 관심이 높은 상품을 빠르게 둘러보세요.</div>
-        </article>
+    <section class="storefront-hero" aria-labelledby="heroTitle">
+      <img src="/assets/solflower-storefront.jpg" alt="햇살이 비치는 Solflower 꽃집" width="1672" height="941" fetchpriority="high">
+      <div class="storefront-copy">
+        <span class="storefront-kicker">SOLFLOWER STUDIO</span>
+        <h1 id="heroTitle">꽃이 필요한<br>모든 순간.</h1>
+        <p>계절을 담은 꽃다발과 일상에 두고 싶은 식물.</p>
+        <a class="storefront-cta" href="/#productSection">상품 둘러보기 <span aria-hidden="true">↗</span></a>
       </div>
     </section>
-
-    <section class="category-strip" aria-label="카테고리 안내">
-      <div class="category-chip">전체 상품</div>
-      <div class="category-chip">신상품</div>
-      <div class="category-chip">인기 상품</div>
-      <div class="category-chip">빠른 배송</div>
-      <div class="category-chip">추천 상품</div>
-    </section>
-
-    <section id="productSection">
+    <section class="store-collection" id="productSection" aria-labelledby="collectionTitle">
       <div class="section-head">
-        <div>
-          <div class="section-title">전체 상품</div>
-          <div class="section-sub">마음에 드는 상품을 선택해 자세히 확인해보세요.</div>
-        </div>
-        <div class="section-sub section-count" id="productCount" aria-live="polite">상품을 불러오는 중</div>
+        <div><h2 class="section-title" id="collectionTitle">지금 만나는 꽃</h2>
+          <p class="section-sub">선물할 꽃부터 나를 위한 한 다발까지</p></div>
+        <p class="section-sub" id="productCount" aria-live="polite">상품을 불러오는 중</p>
       </div>
       <div id="productList" class="grid" aria-live="polite"></div>
     </section>
   </main>
-
-  <footer class="footer container">
-    <div>Soldesk Mall</div>
-    <div class="footer-sub">감각적인 쇼핑을 위한 셀렉션</div>
-  </footer>
-
-  <script src="/assets/app.js?v=demo-v3-fixed"></script>
+  <footer class="footer container"><span>Solflower</span><span>꽃다발 · 플라워 기프트 · 반려식물</span></footer>
+  <script src="/assets/app.js?v=solflower-v2"></script>
   <script>
     renderHeader();
+    const category = getQueryParam('category') || '';
+    for (const link of document.querySelectorAll('[data-category]')) {
+      if (link.dataset.category === category) link.setAttribute('aria-current', 'page');
+    }
     loadProducts();
   </script>
 </body>
