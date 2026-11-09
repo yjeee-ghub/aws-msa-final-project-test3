@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: monitoring-ingress
+  namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    #cert-manager.io/cluster-issuer: my-issuer
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - prometheus.sy84.store
+    - grafana.sy84.store
+    secretName: monitoring-syong-store-tls
+  rules:
+  - host: prometheus.sy84.store
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: prometheus-service
+            port:
+              number: 9090
+
+  - host: grafana.sy84.store
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: grafana
+            port:
+              number: 3000

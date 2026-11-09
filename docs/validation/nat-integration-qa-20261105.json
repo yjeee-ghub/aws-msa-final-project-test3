@@ -1,0 +1,14 @@
+{
+  "completedOn": "2026-11-05",
+  "baselineMain": "cc040cf5d8f621d19d3851aa1a59ae2229815e53",
+  "scope": "NAT automatic failover/failback code integration and documentation; no live AWS apply or fault injection",
+  "pythonUnitTests": {"passed": 152, "includesMockedAWS": true},
+  "terraform": {"validate": "PASS", "format": "PASS", "mockProviderTestsPassed": 3, "livePlanOrApply": false},
+  "architecture": {"width": 2600, "height": 3850, "embeddedSVGIconPlacements": 42, "textLabels": 148,
+    "missingGlyphs": 0, "textOverlaps": 0, "svgToPNGPixelIdentical": true, "browserImageLoad": "PASS"},
+  "runtimePolicy": {"failureObservations": 2, "recoveryObservations": 3, "minimumBypassSeconds": 120,
+    "scheduleSeconds": 60, "reservedConcurrentExecutions": 1},
+  "historicalAWSProof": "Separate AZ-a path isolation/automatic bypass/failback experiment on 2026-11-03",
+  "notYetVerifiedInAWS": ["Integrated fresh installation", "Symmetric AZ-c failover", "Reapply while bypassed", "Integrated preserve/resume", "Integrated complete removal"],
+  "notChanged": ["Shopping application source", "RDS configuration", "App image digests", "GitHub approval protection"]
+}

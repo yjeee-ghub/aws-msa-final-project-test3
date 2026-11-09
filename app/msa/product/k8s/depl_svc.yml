@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-depl
+  namespace: soldesk
+spec:
+  replicas: 1
+  progressDeadlineSeconds: 300
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: product
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
+      labels:
+        app: product
+    spec:
+      # 복제 수가 증가하면 노드별 파드 수가 고르게 배치되도록 유도
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: product
+      # S3 전용 IAM 역할과 연결된 계정 사용
+      serviceAccountName: product-service-account
+      containers:
+        - name: product-container
+          image: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/product-service:lab-v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: "1"
+              memory: "500Mi"
+            requests:
+              cpu: "0.5"
+              memory: "250Mi"
+          env:
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: "update"
+            - name: INTERNAL_SERVICE_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: my-app-secrets
+                  key: INTERNAL_SERVICE_TOKEN
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: my-app-secrets
+                  key: DB_HOST
+            - name: DB_PW
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: DB_PW
+            # Terraform에서 생성할 상품 이미지 버킷
+            - name: S3_BUCKET_NAME
+              value: "sol-test3-product-images-683668078297-ap-northeast-2"
+          # Java 애플리케이션 시작을 약 3분까지 기다림
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 18
+
+          # DB를 포함한 준비 상태가 정상일 때만 Service 트래픽 전달
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          # DB와 무관한 생존 상태 실패가 반복될 때만 컨테이너 재시작
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+  namespace: soldesk
+  labels:
+    # 모니터링 차트의 ServiceMonitor가 선택하는 라벨
+    monitoring: final-apps
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  selector:
+    app: product

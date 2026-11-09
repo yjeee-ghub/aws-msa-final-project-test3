@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>상품 상세 · SYONG STORE</title>
+  <link rel="stylesheet" href="/assets/style.css?v=3">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <a href="/" class="brand">syong<span class="brand-accent">store.</span></a>
+      <nav class="nav">
+        <a class="btn btn-light" href="/">메인</a>
+        <a class="btn btn-primary" data-admin-only style="display:none;" href="/product-create.html">상품등록</a>
+        <a class="btn btn-secondary" data-guest-only href="/login.html">로그인</a>
+        <a class="btn btn-secondary" data-guest-only href="/signup.html">회원가입</a>
+        <div id="userBox"></div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container detail-page">
+    <div id="productDetail"></div>
+  </main>
+
+  <script src="/assets/app.js?v=demo-v3-fixed"></script>
+  <script>
+    renderHeader();
+    loadProductDetail();
+  </script>
+</body>
+</html>

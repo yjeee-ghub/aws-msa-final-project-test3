@@ -1,0 +1,31 @@
+# 회원 서비스는 지정한 Argo CD Application의 상태만 읽는다.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: member-dashboard
+  namespace: soldesk
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: final-dashboard-reader
+  namespace: argocd
+rules:
+  - apiGroups: [argoproj.io]
+    resources: [applications]
+    resourceNames: [final-apps]
+    verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: final-dashboard-reader
+  namespace: argocd
+subjects:
+  - kind: ServiceAccount
+    name: member-dashboard
+    namespace: soldesk
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: final-dashboard-reader

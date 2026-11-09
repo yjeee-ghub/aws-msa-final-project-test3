@@ -1,0 +1,135 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: member-depl
+  namespace: soldesk
+spec:
+  replicas: 1
+  progressDeadlineSeconds: 300
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: member
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
+      labels:
+        app: member
+    spec:
+      # Argo CD 상태 조회에 필요한 읽기 전용 ServiceAccount
+      serviceAccountName: member-dashboard
+      # 복제 수가 증가하면 노드별 파드 수가 고르게 배치되도록 유도
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: member
+      containers:
+      - name: member-container
+        image: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/member-service:lab-v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        resources:
+        # 컨테이너가 사용할수 있는 리소스의 최대치
+          limits:
+            cpu: "1"
+            memory: "500Mi"
+        # 컨테이너가 시작될떄 보장받아야 하는 최소 자원
+          requests:
+            cpu: "0.5"
+            memory: "250Mi"
+        env:
+        # 비밀번호 미설정 시 일반 회원은 이용 가능하지만 관리자 로그인은 차단
+        - name: ADMIN_BOOTSTRAP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: final-admin-config
+              key: admin-password
+              optional: true
+        - name: ADMIN_BOOTSTRAP_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: final-admin-config
+              key: admin-email
+              optional: true
+        # 회원 서비스와 Gateway가 같은 JWT 서명 키 사용
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: my-app-secrets
+              key: JWT_SECRET
+        - name: JWT_REFRESH_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: my-app-secrets
+              key: JWT_REFRESH_SECRET
+        - name: INTERNAL_SERVICE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: my-app-secrets
+              key: INTERNAL_SERVICE_TOKEN
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: my-app-secrets
+              key: DB_HOST
+        - name: DB_PW
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: DB_PW
+        # 컨테이너 상태 확인
+        # Java 애플리케이션 시작을 약 3분까지 기다림
+        startupProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 18
+
+        # DB를 포함한 준비 상태가 정상일 때만 Service 트래픽 전달
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 3
+
+        # DB와 무관한 생존 상태 실패가 반복될 때만 컨테이너 재시작
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 3
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: member-service
+  namespace: soldesk
+  labels:
+    # 모니터링 차트의 ServiceMonitor가 선택하는 라벨
+    monitoring: final-apps
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+  selector:
+    app: member

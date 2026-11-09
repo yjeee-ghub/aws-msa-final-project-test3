@@ -1,0 +1,24 @@
+{
+  "completedOn": "2026-11-05",
+  "documentationCommit": "50202103731f571d7350d0428c582b544845aacd",
+  "codeBaseline": "cc040cf5d8f621d19d3851aa1a59ae2229815e53",
+  "scope": "Documentation and architecture assets only; no new AWS execution",
+  "automationUnitTests": {"passed": 118, "awsIntegrationTests": false},
+  "frontendNodeTests": {"passed": 8},
+  "markdown": {"localTargetsChecked": true, "brokenLocalTargets": 0},
+  "architecture": {
+    "width": 2600,
+    "height": 3730,
+    "source": "docs/images/architecture.svg",
+    "render": "docs/images/architecture.png",
+    "svgXMLValid": true,
+    "embeddedSVGIconPlacements": 38,
+    "textLabelsChecked": 143,
+    "missingKoreanOrSymbolGlyphs": 0,
+    "textOutsideCanvas": 0,
+    "textLabelOverlapCheck": "passed with Malgun Gothic font metrics; rendered sections visually inspected",
+    "pngPixelIdenticalToSVGRender": true,
+    "browserImageLoad": {"png": true, "svg": true, "engine": "Chromium"}
+  },
+  "notRun": ["AWS deployment", "AWS live resource audit", "Terraform apply", "Docker image build", "full Java test suite"]
+}

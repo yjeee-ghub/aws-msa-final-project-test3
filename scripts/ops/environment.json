@@ -1,0 +1,22 @@
+{
+  "account": "683668078297",
+  "profile": "512-team01",
+  "region": "ap-northeast-2",
+  "cluster": "sol-test3-eks",
+  "namespace": "soldesk",
+  "url": "https://server.aws-yjeee.com",
+  "repository": "yjeee-ghub/aws-msa-final-project-test3",
+  "loadBalancer": "sol-test3-alb",
+  "database": "sol-test3-ordermsa-db",
+  "project": "sol-test3",
+  "stateBucket": "sol-test3-tfstate-683668078297-ap-northeast-2",
+  "verifyProject": "sol-test3-deploy-verify",
+  "verifyBucket": "sol-test3-deploy-verify-683668078297-ap-northeast-2",
+  "hostedZoneId": "Z0423440PXYPZGKLZVJ7",
+  "websiteHost": "server.aws-yjeee.com",
+  "argoHost": "argocd.aws-yjeee.com",
+  "grafanaHost": "grafana.aws-yjeee.com",
+  "githubOidcSubject": "repo:yjeee-ghub@336437888/aws-msa-final-project-test3@1450817331:ref:refs/heads/main",
+  "githubOidcProviderArn": "arn:aws:iam::683668078297:oidc-provider/token.actions.githubusercontent.com",
+  "productImageBucket": "sol-test3-product-images-683668078297-ap-northeast-2"
+}

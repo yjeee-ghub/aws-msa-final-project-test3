@@ -1,0 +1,46 @@
+name: Verify deployment
+on:
+  push:
+    branches: [main]
+    paths: ['app/msa/kustomization.yaml', 'deploy/release.json']
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      revision:
+        type: string
+        required: true
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: verify-deployment
+  cancel-in-progress: true
+jobs:
+  verify:
+    # AWS 환경 재구축·조회 역할 준비 후 설정합니다. test2에서는 절대 AWS 인증하지 않습니다.
+    if: github.ref == 'refs/heads/main' && vars.ENABLE_DEPLOY_CHECKS == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.revision || github.sha }}
+      - id: environment
+        shell: python
+        run: |
+          import json, os
+          from pathlib import Path
+          config = json.loads(Path('scripts/ops/environment.json').read_text())
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('region=' + config['region'] + '\naccount=' + config['account'] + '\n')
+      - uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_CHECK_ROLE_ARN }}
+          aws-region: ${{ steps.environment.outputs.region }}
+          allowed-account-ids: ${{ steps.environment.outputs.account }}
+      - name: Verify from inside the VPC
+        env:
+          REVISION: ${{ inputs.revision || github.sha }}
+        run: python3 -u scripts/ops/run_private_verify.py --revision "$REVISION"
+      - if: failure()
+        run: echo '배포 확인 실패. 이전 정상 release를 확인하고 rollback_release.py로 복구 계획을 확인하세요.' >> "$GITHUB_STEP_SUMMARY"

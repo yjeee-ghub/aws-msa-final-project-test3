@@ -1,0 +1,36 @@
+# 앱 배포 대상만 명시: 모니터링/Argo CD/옛 인증서 파일은 포함하지 않음
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - product/k8s/serviceaccount.yml
+  - ordering/k8s/serviceaccount.yml
+  - member/k8s/dashboard-access.yml
+  - member/k8s/depl_svc.yml
+  - product/k8s/depl_svc.yml
+  - ordering/k8s/depl_svc.yml
+  - apigateway/k8s/depl_svc.yml
+  - frontend/k8s/depl_svc.yml
+  - k8s/k8s-services/ingress.yml
+  # 초기 자동 확장 실습은 회원 서비스 하나로 진행
+  - k8s/k8s-hpa/member-hpa.yml
+  - ops/db-credential-sync.yml
+
+configMapGenerator:
+  - name: db-credential-sync-script
+    namespace: soldesk
+    files:
+      - db_credential_sync.py=ops/db_credential_sync.py
+
+# CI에서 Git 커밋별 이미지 태그로 변경할 위치
+images:
+  - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/member-service
+    newTag: lab-v1
+  - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/product-service
+    newTag: lab-v1
+  - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/ordering-service
+    newTag: lab-v1
+  - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/apigateway
+    newTag: lab-v1
+  - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/frontend-service
+    newTag: lab-v1
+

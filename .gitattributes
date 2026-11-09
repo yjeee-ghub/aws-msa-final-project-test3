@@ -1,0 +1,3 @@
+
+# Public CA files retain the reviewed upstream bytes across Windows/Linux.
+*.crt text eol=lf

@@ -1,0 +1,54 @@
+/* 기존 스토어의 색상을 사용한 관리자 요약 화면 */
+.admin-dashboard { padding:38px 0 55px; }
+.dashboard-hero { display:flex; justify-content:space-between; gap:30px; align-items:center; padding:36px 40px; border-radius:20px; background:#173c32; color:#fff; }
+.dashboard-eyebrow { display:block; font-size:10px; font-weight:700; letter-spacing:.14em; color:#7f9063; }
+.dashboard-hero .dashboard-eyebrow { color:#b3c8a4; }
+.dashboard-hero h1 { font-size:36px; letter-spacing:-1.5px; margin:12px 0; }
+.dashboard-hero h1 span { color:#b3c8a4; }
+.dashboard-hero p { color:#d3dfd5; font-size:14px; }
+.dashboard-version { display:inline-block; font-size:11px; margin-top:10px; color:#bbcdb8; }
+.dashboard-refresh { display:flex; flex-direction:column; align-items:flex-end; gap:13px; min-width:165px; }
+.dashboard-refresh button { background:#f8f8f2; color:#173c32; }
+.dashboard-refresh small { color:#c9d5cb; font-size:11px; }
+.status-pill { display:inline-flex; align-items:center; gap:7px; font-size:11px; font-weight:700; padding:7px 10px; border-radius:30px; white-space:nowrap; }
+.status-pill:before { content:''; width:6px; height:6px; background:currentColor; border-radius:50%; }
+.status-pill.good { color:#236447; background:#eaf3e8; }
+.status-pill.warn { color:#8c6219; background:#fff2d9; }
+.status-pill.neutral { color:#67726b; background:#edf0ea; }
+.dashboard-section { margin:30px 0; }
+.dashboard-section-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.dashboard-section h2,.operations-panel h2 { font-size:22px; letter-spacing:-.6px; margin:8px 0; }
+.summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+.summary-card { background:white; border:1px solid var(--line); border-radius:14px; padding:24px; display:flex; flex-direction:column; }
+.metric-label { font-size:13px; font-weight:600; }
+.summary-card strong { font-size:38px; letter-spacing:-1px; margin:18px 0 12px; line-height:1.1; }
+.metric-caption { font-size:11px; color:var(--muted); }
+.operations-grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+.operations-panel { background:#fff; border:1px solid var(--line); border-radius:16px; padding:26px; display:flex; flex-direction:column; }
+.panel-heading { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.tool-mark { display:grid; place-items:center; height:44px; width:44px; background:#fff0df; color:#b7742d; border-radius:12px; font-size:22px; font-weight:800; }
+.tool-mark.argo { color:#587d8a; background:#eaf3f3; }
+.status-line,.revision-line { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 0; border-top:1px solid #edf0e8; font-size:13px; }
+.runtime-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:12px 0; }
+.runtime-grid div { background:#f6f8f1; padding:16px 20px; border-radius:10px; }
+.runtime-grid strong { display:block; font-size:30px; margin-bottom:4px; }
+.runtime-grid span,.revision-line { color:var(--muted); font-size:12px; }
+.revision-line code { color:#173c32; background:#f1f5ec; padding:6px 9px; border-radius:6px; }
+.panel-note { font-size:11px; color:var(--muted); line-height:1.8; margin-top:12px; }
+.panel-link { display:flex; justify-content:space-between; font-size:13px; font-weight:700; border-top:1px solid var(--line); padding-top:16px; margin-top:auto; }
+.product-shortcut { display:flex; justify-content:space-between; align-items:center; gap:20px; margin-top:24px; background:#e9eedf; border-radius:16px; padding:27px 32px; }
+.product-shortcut h2 { font-size:21px; margin:9px 0; }
+.product-shortcut p,.dashboard-footnote { font-size:12px; color:var(--muted); line-height:1.8; }
+.dashboard-footnote { text-align:center; margin:22px 0 0; }
+#dashboardMessage { margin-top:18px; }
+@media(max-width:700px) {
+ .dashboard-hero { padding:27px 24px; align-items:flex-start; flex-direction:column; }
+ .dashboard-hero h1 { font-size:29px; }
+ .dashboard-refresh { flex-direction:row; align-items:center; flex-wrap:wrap; }
+ .dashboard-refresh small { width:100%; }
+ .summary-grid { grid-template-columns:1fr 1fr; gap:12px; }
+ .summary-card { padding:20px; }
+ .summary-card strong { font-size:30px; }
+ .operations-grid { grid-template-columns:1fr; }
+ .product-shortcut { align-items:flex-start; flex-direction:column; padding:25px; }
+}

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>운영 대시보드 · SYONG STORE</title>
+  <link rel="stylesheet" href="/assets/style.css?v=4">
+  <link rel="stylesheet" href="/assets/admin.css?v=4">
+</head>
+<body>
+  <header class="header"><div class="container">
+    <a href="/" class="brand">syong<span class="brand-accent">store.</span></a>
+    <nav class="nav"><a class="btn btn-light" href="/">스토어</a><div id="userBox"></div></nav>
+  </div></header>
+  <main class="container admin-dashboard">
+    <section class="dashboard-hero">
+      <div><div class="dashboard-eyebrow">SYONG / OPERATIONS</div>
+        <h1>스토어 운영 현황<span>.</span></h1>
+        <p>상품과 주문, 서비스 상태를 한눈에 확인하세요.</p>
+        <span class="dashboard-version">관리자 대시보드 · V4</span>
+      </div>
+      <div class="dashboard-refresh">
+        <span class="status-pill neutral" id="overallStatus">상태 확인 중</span>
+        <button class="btn" id="refreshDashboard" type="button">새로고침 ↻</button>
+        <small id="checkedAt">최근 확인 —</small>
+      </div>
+    </section>
+    <div id="dashboardMessage" role="status" class="message" hidden></div>
+
+    <section class="dashboard-section" aria-labelledby="storeTitle">
+      <div class="dashboard-section-head"><div><span class="dashboard-eyebrow">STORE SNAPSHOT</span><h2 id="storeTitle">스토어 요약</h2></div>
+        <span class="status-pill neutral" id="dbStatus">DB 확인 중</span>
+      </div>
+      <div class="summary-grid">
+        <article class="summary-card"><span class="metric-label">전체 회원</span><strong id="membersCount">—</strong><span class="metric-caption">가입된 회원 수</span></article>
+        <article class="summary-card"><span class="metric-label">등록 상품</span><strong id="productsCount">—</strong><span class="metric-caption">현재 등록된 상품 수</span></article>
+        <article class="summary-card"><span class="metric-label">접수 주문</span><strong id="ordersCount">—</strong><span class="metric-caption">상품별 주문 기록 수</span></article>
+        <article class="summary-card"><span class="metric-label">전체 재고</span><strong id="stockCount">—</strong><span class="metric-caption">모든 상품의 남은 수량</span></article>
+      </div>
+    </section>
+
+    <section class="operations-grid" aria-label="서비스 상태">
+      <article class="operations-panel">
+        <div class="panel-heading"><div><span class="dashboard-eyebrow">OBSERVABILITY</span><h2>모니터링</h2></div><span class="tool-mark">G</span></div>
+        <div class="status-line"><span>Grafana 연결</span><span class="status-pill neutral" id="grafanaStatus">확인 중</span></div>
+        <div class="runtime-grid">
+          <div><strong id="nodesReady">—</strong><span>Ready 노드</span></div>
+          <div><strong id="podsReady">—</strong><span>Ready 앱 파드</span></div>
+        </div>
+        <p class="panel-note">노드·파드 수는 Prometheus 지표입니다. 상세 그래프는 Grafana에서 확인하세요.</p>
+        <a class="panel-link" href="https://grafana.aws-yjeee.com" target="_blank" rel="noopener noreferrer">Grafana 열기 <span>↗</span></a>
+      </article>
+      <article class="operations-panel">
+        <div class="panel-heading"><div><span class="dashboard-eyebrow">DELIVERY</span><h2>앱 배포</h2></div><span class="tool-mark argo">A</span></div>
+        <div class="status-line"><span>Git 동기화</span><span class="status-pill neutral" id="syncStatus">확인 중</span></div>
+        <div class="status-line"><span>애플리케이션 상태</span><span class="status-pill neutral" id="healthStatus">확인 중</span></div>
+        <div class="revision-line"><span>반영 커밋</span><code id="appRevision">—</code></div>
+        <p class="panel-note">Argo CD의 final-apps 상태입니다. 새 배포 중에는 Progressing으로 표시될 수 있습니다.</p>
+        <a class="panel-link" href="https://argocd.aws-yjeee.com" target="_blank" rel="noopener noreferrer">Argo CD 열기 <span>↗</span></a>
+      </article>
+    </section>
+
+    <a class="product-shortcut" href="/product-create.html"><div><span class="dashboard-eyebrow">MANAGE YOUR STORE</span><h2>새 상품을 등록할까요?</h2><p>상품 정보와 이미지, 판매할 재고를 추가하세요.</p></div><span class="btn btn-primary">상품 등록 ＋</span></a>
+    <p class="dashboard-footnote">1분마다 자동 갱신합니다. 확인하지 못한 값은 —로 표시하며, 운영 도구의 개별 로그인은 유지됩니다.</p>
+  </main>
+  <script src="/assets/app.js?v=demo-v3-fixed"></script>
+  <script src="/assets/admin.js?v=4"></script>
+</body>
+</html>
+

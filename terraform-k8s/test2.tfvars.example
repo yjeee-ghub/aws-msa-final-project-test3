@@ -1,0 +1,5 @@
+# infra를 먼저 적용하고 ESO/DB Secret Ready를 확인한 뒤 app sync를 켜세요.
+github_revision = "main"
+app_secret_revision = 2
+enable_app_sync = false
+enable_management_ingress = false

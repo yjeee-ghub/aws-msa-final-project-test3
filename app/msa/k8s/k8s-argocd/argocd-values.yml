@@ -1,0 +1,54 @@
+# argo-cd Helm 차트 10.10.3용 단일 클러스터 실습 구성
+# 관리 화면은 TLS를 유지하고 kubectl port-forward로 접속
+server:
+  replicas: 1
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: false
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+controller:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+repoServer:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+redis:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 32Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+# 별도 SSO와 여러 Application 생성 기능은 초기 실습에서 제외
+dex:
+  enabled: false
+applicationSet:
+  replicas: 0
+notifications:
+  enabled: false
+configs:
+  cm:
+    # Git 변경 감지는 주기적으로 확인하며 즉시 반영을 보장하지 않음
+    timeout.reconciliation: 120s
+    timeout.reconciliation.jitter: 30s
+

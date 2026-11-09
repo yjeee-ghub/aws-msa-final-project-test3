@@ -1,0 +1,31 @@
+# 실제 GitHub URL을 입력해 생성하는 템플릿: 이 파일 자체는 적용하지 않음
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: final-apps
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: __REPO_URL__
+    targetRevision: __BRANCH__
+    path: __GIT_PATH__
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: soldesk
+  # HPA가 변경한 회원 서비스 복제 수를 Git의 값으로 되돌리지 않음
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: member-depl
+      namespace: soldesk
+      jsonPointers:
+        - /spec/replicas
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - RespectIgnoreDifferences=true
+

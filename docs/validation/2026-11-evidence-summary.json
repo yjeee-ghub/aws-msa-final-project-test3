@@ -1,0 +1,51 @@
+{
+  "documentedAt": "2026-11-04",
+  "codeBaseline": "cc040cf5d8f621d19d3851aa1a59ae2229815e53",
+  "provenance": "Private saved execution evidence, not a new AWS run. Raw state, credentials, logs and payloads are not published.",
+  "aws20261102": {
+    "initialNATCount": 2,
+    "rdsMultiAZ": true,
+    "releasePR": 28,
+    "rollbackPR": 25,
+    "sameProductStockAndImage": true,
+    "rdsForcedFailover": {
+      "endpointBefore": {
+        "ip": "10.42.22.247",
+        "az": "ap-northeast-2c"
+      },
+      "endpointAfter": {
+        "ip": "10.42.21.47",
+        "az": "ap-northeast-2a"
+      },
+      "productRecovered": true,
+      "scope": "forced failover, not entire AZ outage"
+    },
+    "natTest": "AZ-a route isolation and restoration, not automatic failover"
+  },
+  "separateAWS20261103": {
+    "natAutomaticFailoverAndFailback": "observed in separate minimal environment",
+    "includedInMain": false
+  },
+  "sourceHashes": [
+    {
+      "sourceFile": "final-v3-result.json",
+      "sha256": "967228babe488c7f6eea9f85954320ad97b34fcd34ca561fe7e2559c101a3f9e",
+      "sizeBytes": 548
+    },
+    {
+      "sourceFile": "rollback-result.json",
+      "sha256": "d26153d601a784e4f94edf102cc03ced45bd7bb036b8c53f4dbb63d23fb09963",
+      "sizeBytes": 578
+    },
+    {
+      "sourceFile": "rds-retake-result.json",
+      "sha256": "bbbdf228a64704e470733db52c1a83ccbb0ef1e1adda9506151f3604c5a3a315",
+      "sizeBytes": 16299
+    },
+    {
+      "sourceFile": "nat-path-result.json",
+      "sha256": "6403586a8dec29ff657e2295276726fc464c48f9308fc70c71e09e44455cabd8",
+      "sizeBytes": 6397
+    }
+  ]
+}

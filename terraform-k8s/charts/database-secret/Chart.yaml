@@ -1,0 +1,4 @@
+apiVersion: v2
+name: database-secret
+version: 1.0.0
+type: application

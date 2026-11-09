@@ -1,0 +1,22 @@
+# 회원 서비스의 CPU 사용량에 따라 파드 개수를 자동 조절
+# metrics-server는 Terraform의 EKS 애드온으로 설치하므로 별도 설치하지 않음
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+
+metadata:
+  name: member-hpa
+  namespace: soldesk
+
+spec:
+  # 자동 확장할 Deployment 지정
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: member-depl
+
+  # 평소에는 1개, 부하가 증가하면 최대 3개까지 실행
+  minReplicas: 1
+  maxReplicas: 3
+
+  # 파드의 CPU requests를 기준으로 평균 사용률 60%를 목표로 조절
+  targetCPUUtilizationPercentage: 60

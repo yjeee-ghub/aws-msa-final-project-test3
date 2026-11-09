@@ -1,0 +1,17 @@
+# 선택 실습용: 기본 배포 목록에는 포함하지 않음
+# metrics-server는 Terraform 애드온 사용
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: ordering-hpa
+  namespace: soldesk
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: ordering-depl
+  minReplicas: 1
+  # 실습 시 최대 3개로 제한
+  maxReplicas: 3
+  # CPU requests 대비 평균 사용률 기준
+  targetCPUUtilizationPercentage: 60

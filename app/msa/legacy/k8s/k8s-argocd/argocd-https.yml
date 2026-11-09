@@ -1,0 +1,16 @@
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argo-syong-store-tls
+  namespace: argocd
+spec:
+  secretName: argo-syong-store-tls
+  duration: 2160h #90day
+  renewBefore: 360h #before 15day
+  issuerRef:
+    name: my-issuer
+    kind: ClusterIssuer
+  commonName: argo.sy84.store
+  dnsNames:
+  - argo.sy84.store

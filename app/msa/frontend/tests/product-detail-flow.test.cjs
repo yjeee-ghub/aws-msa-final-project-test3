@@ -1,0 +1,22 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const vm=require('node:vm');
+const path=require('node:path');
+const source=process.env.FRONTEND_SOURCE || path.join(__dirname,'../src/assets/app.js');
+test('product card navigation loads and renders the same product detail',async()=>{
+  const c=vm.createContext({window:{location:{}},URLSearchParams});
+  vm.runInContext(fs.readFileSync(source,'utf8'),c);
+  const list={innerHTML:''}; const detail={innerHTML:''};
+  c.document={getElementById:id=>id==='productList'?list:id==='productDetail'?detail:null};
+  const p={id:1,name:'DEPLOY-TEST',price:1000,stockQuantity:10,imageUrl:'/assets/product-placeholder.svg'};
+  const calls=[];
+  c.apiRequest=async url=>{calls.push(url);return url.endsWith('/list')?[p]:p;};
+  await c.loadProducts();
+  const href=list.innerHTML.match(/class="card card-link" href="([^"]+)"/)[1];
+  c.window.location.search=new URL(href,'https://example.test').search;
+  await c.loadProductDetail();
+  assert.ok(calls.includes('/product-service/product/1'),'detail API must receive the selected product id');
+  assert.match(detail.innerHTML,/DEPLOY-TEST/);
+  assert.match(detail.innerHTML,/detail-title/);
+});

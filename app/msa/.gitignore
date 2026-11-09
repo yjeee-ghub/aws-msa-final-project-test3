@@ -1,0 +1,15 @@
+# 빌드 결과와 IDE 캐시
+**/build/
+**/bin/
+**/.gradle/
+.idea/
+*.iml
+# 실제 비밀번호나 인증 파일은 Git에 올리지 않음
+.env
+.env.*
+*.pem
+*secrets*.yml
+*secrets*.yaml
+# 사용자 GitHub 주소로 생성하는 Argo CD 연결 파일
+k8s/k8s-argocd/application.generated.yml
+

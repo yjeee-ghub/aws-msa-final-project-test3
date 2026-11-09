@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+images:
+  - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/member-service
+    newTag: fixture-v1
+  - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/product-service
+    newTag: fixture-v1
+  - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/ordering-service
+    newTag: fixture-v1
+  - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/apigateway
+    newTag: fixture-v1
+  - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/frontend-service
+    newTag: fixture-v1

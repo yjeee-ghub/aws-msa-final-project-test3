@@ -1,0 +1,36 @@
+
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: my-issuer
+  namespace: soldesk
+spec:
+  acme:
+  # 인증서 서버 주소. 해당 서버의 리소스를 통해 인증서 발행
+    server: https://acme-v02.api.letsencrypt.org/directory
+  # 인증서 만료 또는 갱신 필요시 알람 email
+    email: akslckxk@gmail.com
+    privateKeySecretRef:
+      name: my-issuer
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+---
+# 3.ClusterIssue를 사용하여 Certificate 리소스 생성 : Certificate리소스 생성시에 인증서 발급
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: server-syong-store-tls
+  namespace: soldesk
+spec:
+  secretName: server-syong-store-tls
+  duration: 2160h #90day
+  renewBefore: 360h #before 15day
+  issuerRef:
+    name: my-issuer
+    kind: ClusterIssuer
+  commonName: server.sy84.store
+  dnsNames:
+  - server.sy84.store
+

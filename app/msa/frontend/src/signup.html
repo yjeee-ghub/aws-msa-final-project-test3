@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원가입 · SYONG STORE</title>
+  <link rel="stylesheet" href="/assets/style.css?v=3">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <a href="/" class="brand">syong<span class="brand-accent">store.</span></a>
+      <nav class="nav">
+        <a class="btn btn-light" href="/">메인</a>
+        <a class="btn btn-secondary" data-guest-only href="/login.html">로그인</a>
+        <div id="userBox"></div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="form-page">
+    <section class="form-wrap">
+      <h2>회원가입</h2>
+      <div class="form-intro">간단한 정보 입력 후 바로 쇼핑을 시작할 수 있습니다.</div>
+      <form id="signupForm">
+        <div class="field">
+          <label for="name">이름</label>
+          <input id="name" name="name" type="text" required>
+        </div>
+        <div class="field">
+          <label for="loginId">아이디</label>
+          <input id="loginId" name="loginId" type="text" required>
+        </div>
+        <div class="field">
+          <label for="nickname">닉네임</label>
+          <input id="nickname" name="nickname" type="text" required>
+        </div>
+        <div class="field">
+          <label for="email">이메일</label>
+          <input id="email" name="email" type="email" required>
+        </div>
+        <div class="field">
+          <label for="password">비밀번호</label>
+          <input id="password" name="password" type="password" required>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">회원가입</button>
+          <a class="btn btn-light" href="/login.html">로그인으로</a>
+        </div>
+        <div id="signupMessage" style="display:none;"></div>
+      </form>
+    </section>
+  </main>
+
+  <script src="/assets/app.js?v=demo-v3-fixed"></script>
+  <script>
+    renderHeader();
+
+    document.getElementById('signupForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const payload = {
+        name: document.getElementById('name').value,
+        loginId: document.getElementById('loginId').value,
+        nickname: document.getElementById('nickname').value,
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value
+      };
+
+      try {
+        await apiRequest('/member-service/member/create', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        showMessage('signupMessage', '회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.', 'success');
+        setTimeout(function () {
+          window.location.href = '/login.html';
+        }, 700);
+      } catch (error) {
+        showMessage('signupMessage', '회원가입에 실패했습니다. 아이디 또는 이메일 중복 여부를 확인해주세요.', 'error');
+      }
+    });
+  </script>
+</body>
+</html>

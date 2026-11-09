@@ -1,0 +1,18 @@
+spring:
+  profiles:
+    default: prod
+# DB가 끊기면 트래픽만 중단하며 liveness에 DB를 포함하지 않습니다.
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState,db
+
+spring.cloud.openfeign.client.config.default:
+  connectTimeout: 2000
+  readTimeout: 5000

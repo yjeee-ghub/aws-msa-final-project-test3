@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>장바구니 · SYONG STORE</title><link rel="stylesheet" href="/assets/style.css?v=3"></head>
+<body>
+<header class="header"><div class="container">
+  <a href="/" class="brand">syong<span class="brand-accent">store.</span></a>
+  <nav class="nav"><a class="btn btn-light" href="/">계속 쇼핑하기</a><div id="userBox"></div></nav>
+</div></header>
+<main class="container utility-page">
+  <div class="section-eyebrow">YOUR SELECTION</div>
+  <h1 class="section-title">장바구니<span class="title-dot">.</span></h1>
+  <p>마음에 드는 상품을 담고 수량을 선택하세요.</p>
+  <div id="cartItems"></div>
+  <div class="cart-summary"><strong id="cartTotal"></strong><button class="btn btn-primary btn-large" id="checkoutBtn" type="button">담은 상품 주문하기</button></div>
+  <div id="cartMessage" style="display:none" role="status"></div>
+</main>
+<script src="/assets/app.js?v=demo-v3-fixed"></script><script>renderHeader(); if (guardLogin()) renderCart();</script>
+</body></html>
+

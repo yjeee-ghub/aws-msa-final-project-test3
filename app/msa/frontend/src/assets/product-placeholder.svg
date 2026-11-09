@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#e9eddf"/>
+  <circle cx="300" cy="280" r="150" fill="#d7e0c7"/>
+  <path d="m210 240 90-48 90 48v110l-90 48-90-48Z" fill="#bbcba3" stroke="#6b8157" stroke-width="3" stroke-linejoin="round"/>
+  <path d="m210 240 90 48 90-48m-90 48v110m-45-182 90 48v41" fill="none" stroke="#6b8157" stroke-width="3"/>
+  <text x="300" y="475" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" letter-spacing="4" fill="#6b8157">SYONG STORE</text>
+</svg>

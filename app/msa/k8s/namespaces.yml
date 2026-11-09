@@ -1,0 +1,19 @@
+# 애플리케이션 서비스가 실행될 공간
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: soldesk
+
+---
+# Prometheus·Grafana·Alertmanager가 실행될 공간
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+
+---
+# Argo CD가 실행될 공간
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argocd

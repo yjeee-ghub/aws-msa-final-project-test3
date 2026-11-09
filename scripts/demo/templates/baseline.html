@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soldesk Mall · 기본 화면</title>
+  <link rel="stylesheet" href="/assets/style.css?v=3">
+  <style>
+    body { background:#f5f6f8; color:#222; }
+    .header { background:white; position:static; }
+    .brand { color:#234f87; }
+    .demo-intro { margin:32px 0; padding:28px; background:white; border:1px solid #ddd; border-radius:8px; }
+    .demo-intro h1 { font-size:32px; margin:0 0 12px; }
+    .demo-intro p { color:#555; }
+    .demo-head { display:flex; justify-content:space-between; align-items:center; margin:24px 0; }
+    .demo-head h2 { font-size:24px; }
+  </style>
+</head>
+<body>
+  <header class="header"><div class="container">
+    <a href="/" class="brand">Soldesk <span>Mall</span></a>
+    <nav class="nav">
+      <a class="btn btn-light" data-guest-only href="/login.html">로그인</a>
+      <a class="btn btn-light" data-guest-only href="/signup.html">회원가입</a>
+      <a class="btn btn-primary" data-admin-only style="display:none" href="/product-create.html">상품등록</a>
+      <div id="userBox"></div>
+    </nav>
+  </div></header>
+  <main class="container">
+    <section class="demo-intro"><h1>Soldesk Mall</h1><p>상품을 확인하고 장바구니에 담아 주문해보세요.</p></section>
+    <section id="productSection">
+      <div class="demo-head"><h2>전체 상품</h2><div id="productCount">상품을 불러오는 중</div></div>
+      <div id="productList" class="grid"></div>
+    </section>
+  </main>
+  <footer class="footer container">Soldesk Mall · 기본 디자인 시연</footer>
+  <!-- Initial-style adaptation, not an unmodified historical app. test2 API/auth remain unchanged. -->
+  <script src="/assets/app.js?v=5"></script>
+  <script>renderHeader(); loadProducts();</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apigateway-depl
+  namespace: soldesk
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apigateway
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
+      labels:
+        app: apigateway
+    spec:
+      # 복제 수가 증가하면 노드별 파드 수가 고르게 배치되도록 유도
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: apigateway
+      containers:
+      - name: apigateway-container
+        image: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/apigateway:lab-v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        resources:
+        # 컨테이너가 사용할수 있는 리소스의 최대치
+          limits:
+            cpu: "1"
+            memory: "500Mi"
+        # 컨테이너가 시작될떄 보장받아야 하는 최소 자원
+          requests:
+            cpu: "0.5"
+            memory: "250Mi"
+        env:
+        # 회원 서비스와 Gateway가 같은 JWT 서명 키 사용
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: my-app-secrets
+              key: JWT_SECRET
+        # Gateway 시작 완료 확인
+        startupProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 18
+
+        # Gateway가 정상 응답할 때 트래픽 전달
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 3
+
+        # DB 및 외부 서비스와 무관한 생존 상태 실패 시에만 재시작
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 3
+ 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apigateway-service
+  namespace: soldesk
+  labels:
+    # 모니터링 차트의 ServiceMonitor가 선택하는 라벨
+    monitoring: final-apps
+  annotations:
+    # Gateway 대상 그룹은 프런트엔드와 다른 경로로 상태 확인
+    alb.ingress.kubernetes.io/healthcheck-path: /actuator/health/readiness
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+  selector: 
+    app: apigateway

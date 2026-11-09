@@ -1,0 +1,62 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: order-backend-ingress
+  namespace: soldesk
+  annotations:
+    # 외부에서 접속할 수 있는 ALB 생성
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    # ClusterIP 서비스를 사용하면서 파드 IP로 직접 전달
+    alb.ingress.kubernetes.io/target-type: ip
+    # Argo CD와 Grafana의 Ingress와 같은 ALB 공유
+    alb.ingress.kubernetes.io/group.name: sol-test3-shared
+    # Terraform DNS 설정에서 조회할 공유 ALB 이름
+    alb.ingress.kubernetes.io/load-balancer-name: sol-test3-alb
+    # HTTPS 인증서는 아래 host와 일치하는 발급된 ACM 인증서 자동 조회
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    # HTTP 요청을 HTTPS로 전환
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    # 기본 상태 확인 경로: 프런트엔드의 첫 화면
+    alb.ingress.kubernetes.io/healthcheck-path: /
+    # 정상 응답으로 인정할 HTTP 상태 코드
+    alb.ingress.kubernetes.io/success-codes: '200'
+spec:
+  # AWS Load Balancer Controller가 처리할 Ingress
+  ingressClassName: alb
+  # 웹사이트 도메인과 일치하는 요청 처리
+  rules:
+  - host: server.aws-yjeee.com
+    http:
+      paths:
+      # 회원 API 요청은 Gateway로 전달
+      - path: /member-service
+        pathType: Prefix
+        backend:
+          service:
+            name: apigateway-service
+            port:
+              number: 80
+      # 상품 API 요청은 Gateway로 전달
+      - path: /product-service
+        pathType: Prefix
+        backend:
+          service:
+            name: apigateway-service
+            port:
+              number: 80
+      # 주문 API 요청은 Gateway로 전달
+      - path: /ordering-service
+        pathType: Prefix
+        backend:
+          service:
+            name: apigateway-service
+            port:
+              number: 80
+      # 나머지 요청은 프런트엔드로 전달
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 80

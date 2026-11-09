@@ -1,0 +1,22 @@
+spring:
+  profiles:
+    default: prod
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+
+    # Gateway는 DB를 직접 사용하지 않습니다.
+    health:
+      probes:
+        enabled: true
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState

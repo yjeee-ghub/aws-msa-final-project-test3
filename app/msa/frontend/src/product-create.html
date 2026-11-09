@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>상품등록 · SYONG STORE</title>
+  <link rel="stylesheet" href="/assets/style.css?v=3">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <a href="/" class="brand">syong<span class="brand-accent">store.</span></a>
+      <nav class="nav">
+        <a class="btn btn-light" href="/">메인</a>
+        <a class="btn btn-secondary" data-guest-only href="/login.html">로그인</a>
+        <a class="btn btn-secondary" data-guest-only href="/signup.html">회원가입</a>
+        <div id="userBox"></div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="form-page">
+    <section class="form-wrap">
+      <h2>상품등록</h2>
+      <div class="form-intro">판매할 상품 정보를 입력하고 이미지를 등록해보세요.</div>
+      <form id="productForm" enctype="multipart/form-data">
+        <div class="field">
+          <label for="name">상품명</label>
+          <input id="name" name="name" type="text" required>
+        </div>
+        <div class="field">
+          <label for="category">카테고리</label>
+          <input id="category" name="category" type="text" placeholder="예: 의류, 전자기기">
+        </div>
+        <div class="field">
+          <label for="imageFile">상품 이미지 파일</label>
+          <input id="imageFile" name="imageFile" type="file" accept="image/*" required>
+        </div>
+        <div class="field">
+          <label for="price">가격</label>
+          <input id="price" name="price" type="number" min="0" required>
+        </div>
+        <div class="field">
+          <label for="stockQuantity">재고수량</label>
+          <input id="stockQuantity" name="stockQuantity" type="number" min="0" required>
+        </div>
+        <div class="field">
+          <label for="description">상품설명</label>
+          <textarea id="description" name="description"></textarea>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">상품등록</button>
+          <a class="btn btn-light" href="/">메인으로</a>
+        </div>
+        <div id="productMessage" style="display:none;"></div>
+      </form>
+    </section>
+  </main>
+
+  <script src="/assets/app.js?v=demo-v3-fixed"></script>
+  <script>
+    renderHeader();
+    guardLogin('/login.html');
+
+    document.getElementById('productForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      const imageFile = document.getElementById('imageFile').files[0];
+      if (!imageFile) {
+        showMessage('productMessage', '상품 이미지를 선택해주세요.', 'error');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('name', document.getElementById('name').value);
+      formData.append('category', document.getElementById('category').value);
+      formData.append('price', document.getElementById('price').value);
+      formData.append('stockQuantity', document.getElementById('stockQuantity').value);
+      formData.append('description', document.getElementById('description').value);
+      formData.append('imageFile', imageFile);
+
+      try {
+        await apiRequest('/product-service/product/create', {
+          method: 'POST',
+          body: formData
+        });
+        showMessage('productMessage', '상품이 등록되었습니다. 메인페이지에서 확인하세요.', 'success');
+        setTimeout(function () {
+          window.location.href = '/';
+        }, 700);
+      } catch (error) {
+        showMessage('productMessage', '상품 등록에 실패했습니다. 입력값과 로그인 상태를 확인해주세요.', 'error');
+      }
+    });
+  </script>
+</body>
+</html>

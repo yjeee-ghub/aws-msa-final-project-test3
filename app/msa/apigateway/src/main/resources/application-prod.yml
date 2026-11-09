@@ -1,0 +1,34 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: member-service
+          predicates:
+            - Path=/member-service/**
+          filters:
+            - StripPrefix=1
+          uri: http://member-service
+
+        - id: ordering-service
+          predicates:
+            - Path=/ordering-service/**
+          filters:
+            - StripPrefix=1
+          uri: http://ordering-service
+
+        - id: product-service
+          predicates:
+            - Path=/product-service/**
+          filters:
+            - StripPrefix=1
+          uri: http://product-service
+
+jwt:
+  secretKey: ${JWT_SECRET}

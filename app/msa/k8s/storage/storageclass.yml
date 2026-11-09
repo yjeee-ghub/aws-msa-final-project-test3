@@ -1,0 +1,15 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: final-gp3
+# Terraform에서 설치하는 EBS CSI Driver 사용
+provisioner: ebs.csi.aws.com
+parameters:
+  type: gp3
+  encrypted: 'true'
+# 파드가 배치될 AZ가 정해진 뒤 같은 AZ에 볼륨 생성
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+# 실습 정리 시 PVC를 삭제하면 연결된 EBS도 삭제
+reclaimPolicy: Delete
+

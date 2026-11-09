@@ -1,0 +1,243 @@
+# kube-prometheus-stack Helm 차트 92.3.0용 실습 설정
+# 기존 개별 Prometheus/Grafana YAML과 동시에 설치하지 않음
+# 실제 EKS 사용량을 기준으로 요청량을 지정하고 실습 후에도 확인
+
+# EKS에서 직접 접근할 수 없는 관리 영역의 수집은 끔
+kubeEtcd:
+  enabled: false
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+
+defaultRules:
+  rules:
+    etcd: false
+    kubeControllerManager: false
+    kubeSchedulerAlerting: false
+    kubeSchedulerRecording: false
+
+prometheus:
+  # Pod 주석만으로는 Operator가 자동 수집하지 않으므로 ServiceMonitor 명시
+  additionalServiceMonitors:
+    - name: final-apps
+      namespaceSelector:
+        matchNames: ['soldesk']
+      selector:
+        matchLabels:
+          monitoring: final-apps
+      endpoints:
+        - port: http
+          path: /actuator/prometheus
+          interval: 30s
+  ingress:
+    enabled: false
+  prometheusSpec:
+    replicas: 1
+    # 실습용으로 저장 기간과 데이터 크기 제한
+    retention: 2d
+    retentionSize: 1GB
+    scrapeInterval: 30s
+    evaluationInterval: 30s
+    # 재생성 후에도 기록 유지: EBS는 이 볼륨의 AZ에 있는 노드에서만 연결 가능
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: final-gp3
+          accessModes: ['ReadWriteOnce']
+          resources:
+            requests:
+              storage: 5Gi
+    resources:
+      requests:
+        cpu: 100m
+        # 관측 사용량 약 413Mi에 여유를 두어 노드 배치 시 반영
+        memory: 512Mi
+      limits:
+        cpu: '1'
+        memory: 1Gi
+
+grafana:
+  # 단일 EBS를 다른 노드의 새 파드가 동시에 연결하지 않도록 교체 순서 지정
+  deploymentStrategy:
+    type: Recreate
+  # 외부 접속용 공유 ALB Ingress는 Terraform에서 별도로 관리
+  ingress:
+    enabled: false
+  service:
+    type: ClusterIP
+  # 비밀번호는 차트가 생성하며 실제 설치 후 Secret에서 확인
+  adminUser: admin
+  defaultDashboardsTimezone: Asia/Seoul
+  persistence:
+    # 사용자 대시보드 설정 보존용 소형 EBS
+    enabled: true
+    type: pvc
+    storageClassName: final-gp3
+    accessModes: ['ReadWriteOnce']
+    size: 1Gi
+  resources:
+    requests:
+      cpu: 100m
+      # 관측 사용량 약 377Mi에 여유를 두어 다른 파드의 과밀 배치 방지
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  sidecar:
+    # 기본 대시보드와 데이터 소스를 가져오는 보조 컨테이너
+    resources:
+      requests:
+        cpu: 20m
+        # 보조 컨테이너 각각 약 80Mi 사용: 두 컨테이너에 각각 적용
+        memory: 96Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
+
+alertmanager:
+  ingress:
+    enabled: false
+  serviceAccount:
+    create: true
+    # Terraform IAM 신뢰 정책의 ServiceAccount 이름과 일치
+    name: alertmanager
+    annotations:
+      eks.amazonaws.com/role-arn: arn:aws:iam::683668078297:role/sol-test3-alertmanager-sns-role
+  # 아래 config의 Go 템플릿은 Helm이 아닌 Alertmanager가 처리
+  tplConfig: false
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      # 기본 규칙은 화면에서 확인하고, 프로젝트 규칙만 SNS로 전달
+      receiver: 'null'
+      group_by: ['alertname', 'namespace']
+      group_wait: 30s
+      group_interval: 1m
+      repeat_interval: 1h
+      routes:
+        - receiver: operations-sns
+          matchers:
+            - 'alertname=~"Final.*"'
+    receivers:
+      - name: 'null'
+      - name: operations-sns
+        sns_configs:
+          # IAM 역할의 임시 자격증명을 사용하므로 액세스 키를 넣지 않음
+          - sigv4:
+              region: ap-northeast-2
+            topic_arn: arn:aws:sns:ap-northeast-2:683668078297:sol-test3-operations-alerts
+            send_resolved: true
+            subject: '[Final] {{ .Status }}: {{ .GroupLabels.alertname }}'
+            message: |-
+              프로젝트: sol-test3-eks
+              상태: {{ .Status }}
+              {{ range .Alerts }}
+              - {{ .Annotations.summary }}
+                {{ .Annotations.description }}
+              {{ end }}
+    # 기본 차트의 억제 규칙이 실습 알림을 숨기지 않도록 별도 지정
+    inhibit_rules: []
+  alertmanagerSpec:
+    replicas: 1
+    # 알림의 중복 방지 상태 및 Silence 기록 보존
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: final-gp3
+          accessModes: ['ReadWriteOnce']
+          resources:
+            requests:
+              storage: 1Gi
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+prometheusOperator:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+# 파드 복제 수, HPA 목표, 노드 상태 등의 Kubernetes 정보 수집
+kube-state-metrics:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+# 각 노드에 하나씩 실행하여 CPU·메모리·디스크 정보 수집
+prometheus-node-exporter:
+  resources:
+    requests:
+      cpu: 20m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+# Kubernetes 상태 지표로 실습용 장애와 복제 수 변경을 감지
+# 메트릭 수집 주기 사이의 짧은 변화는 놓칠 수 있으며 이벤트 로그를 대체하지 않음
+additionalPrometheusRulesMap:
+  final-project:
+    groups:
+      - name: final-project-operations
+        rules:
+          # 직전 실행의 실패만 평가: 예전 실패 Job 때문에 복구 후에도 경보가 남지 않음
+          - alert: FinalDbCredentialSyncFailed
+            expr: (kube_job_status_failed{namespace="soldesk",job_name=~"db-credential-sync-.*"} > 0) and on(namespace,job_name) (kube_job_created{namespace="soldesk",job_name=~"db-credential-sync-.*"} == on(namespace) group_left() max by(namespace) (kube_job_created{namespace="soldesk",job_name=~"db-credential-sync-.*"}))
+            for: 1m
+            labels:
+              severity: warning
+            annotations:
+              summary: 'DB 인증 정보 전달 작업 실패'
+              description: '최근 db-credential-sync Job이 실패했습니다. ESO Ready, 앱 DB 연결, 롤아웃 상태를 확인하세요. 비밀번호를 로그에 출력하지 마세요.'
+
+          # 단순 파드 삭제 후 교체는 restart 카운터 증가와 다름
+          - alert: FinalPodRestarted
+            expr: sum by (namespace, pod, container) (increase(kube_pod_container_status_restarts_total{namespace="soldesk"}[5m])) > 0
+            labels:
+              severity: warning
+            annotations:
+              summary: '앱 컨테이너 재시작 감지'
+              description: '{{ $labels.namespace }}/{{ $labels.pod }}의 {{ $labels.container }} 컨테이너가 최근 5분 안에 재시작했습니다.'
+
+          # 배포 직후나 정상 업데이트의 짧은 준비 시간을 기다림
+          - alert: FinalDeploymentUnavailable
+            expr: kube_deployment_status_replicas_available{namespace="soldesk"} < kube_deployment_spec_replicas{namespace="soldesk"}
+            for: 2m
+            labels:
+              severity: warning
+            annotations:
+              summary: '서비스의 준비된 파드 수 부족'
+              description: '{{ $labels.namespace }}/{{ $labels.deployment }}의 사용 가능한 복제 수가 목표보다 적은 상태로 2분 이상 유지되었습니다.'
+
+          - alert: FinalNodeNotReady
+            expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+            for: 2m
+            labels:
+              severity: critical
+            annotations:
+              summary: '노드 Ready 상태 이상'
+              description: '{{ $labels.node }} 노드가 2분 이상 Ready 상태가 아닙니다.'
+
+          # HPA가 관리하는 복제 수의 증가·감소 모두 확인
+          - alert: FinalHPAReplicaChanged
+            expr: max by (namespace, horizontalpodautoscaler) (changes(kube_horizontalpodautoscaler_status_current_replicas{namespace="soldesk"}[2m])) > 0
+            labels:
+              severity: info
+            annotations:
+              summary: 'HPA 복제 수 변경 감지'
+              description: '{{ $labels.namespace }}/{{ $labels.horizontalpodautoscaler }}의 현재 복제 수가 최근 2분 안에 변경되었습니다. Grafana에서 증가·감소를 확인하세요.'
+

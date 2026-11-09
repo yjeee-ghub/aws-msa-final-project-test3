@@ -1,0 +1,119 @@
+# 프런트엔드 컨테이너를 관리하는 Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-depl
+  namespace: soldesk
+spec:
+  # 노드 점검 중에도 하나가 남도록 두 파드 운영
+  replicas: 2
+
+  # 새 파드를 하나 더 띄우고 준비 완료 후 기존 파드 종료
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
+  # 새 파드가 Ready를 10초 유지해야 교체 완료로 판단
+  minReadySeconds: 10
+  progressDeadlineSeconds: 300
+
+  selector:
+    matchLabels:
+      app: frontend
+
+  template:
+    metadata:
+      labels:
+        app: frontend
+
+    spec:
+      # ALB가 종료할 파드를 대상에서 제외하는 동안 기존 요청을 처리할 시간을 확보합니다.
+      terminationGracePeriodSeconds: 40
+      # 복제 수가 증가하면 노드별 파드 수가 고르게 배치되도록 유도
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: frontend
+      containers:
+        - name: frontend-container
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 15"]
+
+          # 이번에 빌드한 프런트엔드 이미지
+          image: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/frontend-service:lab-v1
+          imagePullPolicy: Always
+
+          ports:
+            - containerPort: 80
+
+          # 정적 웹사이트의 초기 실습용 자원 설정
+          # 실제 사용량을 관측한 뒤 조정
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+
+          # 정적 파일 제공 여부만 확인하며 Gateway/DB 장애와 분리합니다.
+          startupProbe:
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          # NGINX가 화면을 제공할 준비가 됐는지 확인
+          # 준비되지 않은 Pod에는 Service 트래픽을 보내지 않음
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+---
+# 클러스터 내부에서 프런트엔드 Pod로 연결
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: soldesk
+spec:
+  type: ClusterIP
+
+  ports:
+    - port: 80
+      targetPort: 80
+
+  selector:
+    app: frontend
+
+---
+# 자발적 축출 시 최소 한 파드를 유지합니다. 노드 장애나 rollout 자체를 제어하지는 않습니다.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: frontend-pdb
+  namespace: soldesk
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: frontend

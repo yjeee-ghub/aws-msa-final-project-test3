@@ -1,0 +1,119 @@
+{
+  "eks": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Containers/64/Arch_Amazon-Elastic-Kubernetes-Service_64.svg"
+  },
+  "ecr": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Containers/64/Arch_Amazon-Elastic-Container-Registry_64.svg"
+  },
+  "ec2": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Compute/64/Arch_Amazon-EC2_64.svg"
+  },
+  "rds": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Databases/64/Arch_Amazon-RDS_64.svg"
+  },
+  "s3": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Storage/64/Arch_Amazon-Simple-Storage-Service_64.svg"
+  },
+  "ebs": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Storage/64/Arch_Amazon-Elastic-Block-Store_64.svg"
+  },
+  "secrets": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Security-Identity/64/Arch_AWS-Secrets-Manager_64.svg"
+  },
+  "sns": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Application-Integration/64/Arch_Amazon-Simple-Notification-Service_64.svg"
+  },
+  "sqs": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Application-Integration/64/Arch_Amazon-Simple-Queue-Service_64.svg"
+  },
+  "lambda": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Compute/64/Arch_AWS-Lambda_64.svg"
+  },
+  "ses": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Business-Applications/64/Arch_Amazon-Simple-Email-Service_64.svg"
+  },
+  "dynamodb": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Databases/64/Arch_Amazon-DynamoDB_64.svg"
+  },
+  "codebuild": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Developer-Tools/64/Arch_AWS-CodeBuild_64.svg"
+  },
+  "cloudwatch": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Management-Tools/64/Arch_Amazon-CloudWatch_64.svg"
+  },
+  "cloudtrail": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Management-Tools/64/Arch_AWS-CloudTrail_64.svg"
+  },
+  "route53": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Networking-Content-Delivery/64/Arch_Amazon-Route-53_64.svg"
+  },
+  "iam": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Security-Identity/64/Arch_AWS-Identity-and-Access-Management_64.svg"
+  },
+  "acm": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Security-Identity/64/Arch_AWS-Certificate-Manager_64.svg"
+  },
+  "alb": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Resource-Icons_07312026/Res_Networking-Content-Delivery/Res_Elastic-Load-Balancing_Application-Load-Balancer_48.svg"
+  },
+  "nat": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Resource-Icons_07312026/Res_Networking-Content-Delivery/Res_Amazon-VPC_NAT-Gateway_48.svg"
+  },
+  "igw": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Resource-Icons_07312026/Res_Networking-Content-Delivery/Res_Amazon-VPC_Internet-Gateway_48.svg"
+  },
+  "vpc": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Networking-Content-Delivery/64/Arch_Amazon-Virtual-Private-Cloud_64.svg"
+  },
+  "ssm": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Management-Tools/64/Arch_AWS-Systems-Manager_64.svg"
+  },
+  "eventbridge": {
+    "source": "AWS Architecture Icons / 2026-07-31",
+    "archivePath": "Architecture-Service-Icons_07312026/Arch_Application-Integration/64/Arch_Amazon-EventBridge_64.svg"
+  },
+  "docker": {
+    "source": "https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/docker.svg"
+  },
+  "terraform": {
+    "source": "https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/terraform.svg"
+  },
+  "githubactions": {
+    "source": "https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/githubactions.svg"
+  },
+  "kubernetes": {
+    "source": "https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.svg"
+  },
+  "argo": {
+    "source": "https://raw.githubusercontent.com/cncf/artwork/main/projects/argo/icon/color/argo-icon-color.svg"
+  },
+  "prometheus": {
+    "source": "https://raw.githubusercontent.com/cncf/artwork/main/projects/prometheus/icon/color/prometheus-icon-color.svg"
+  },
+  "grafana": {
+    "source": "https://raw.githubusercontent.com/grafana/grafana/main/public/img/grafana_icon.svg"
+  }
+}

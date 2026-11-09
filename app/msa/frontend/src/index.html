@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="일상에 작은 취향을 더하는 공간, SYONG STORE.">
+  <meta name="theme-color" content="#173c32">
+  <title>SYONG STORE · 일상에 취향을 더하다</title>
+  <link rel="stylesheet" href="/assets/style.css?v=3">
+</head>
+<body>
+  <a class="skip-link" href="#main">본문 바로가기</a>
+  <div class="top-banner">작은 발견으로 달라지는 일상. <span>Welcome to SYONG STORE.</span></div>
+  <header class="header">
+    <div class="container">
+      <a href="/" class="brand" aria-label="SYONG STORE 홈">syong<span class="brand-accent">store.</span></a>
+      <a class="header-shop" href="#productSection">상품 둘러보기 <span aria-hidden="true">↗</span></a>
+      <nav class="nav" aria-label="회원 메뉴">
+        <a class="btn btn-light" data-guest-only href="/login.html">로그인</a>
+        <a class="btn btn-primary" data-guest-only href="/signup.html">회원가입 <span aria-hidden="true">↗</span></a>
+        <a class="btn btn-primary" data-admin-only style="display:none;" href="/product-create.html">상품등록 <span aria-hidden="true">＋</span></a>
+        <div id="userBox"></div>
+      </nav>
+    </div>
+  </header>
+  <main class="container" id="main">
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="hero-copy">
+        <div class="hero-kicker"><span class="status-dot" aria-hidden="true"></span> EVERYDAY, A LITTLE BETTER</div>
+        <h1 id="heroTitle">일상에<br>작은 <em>취향</em>을<br>더하다<span class="title-dot">.</span></h1>
+        <p>매일 쓰는 물건 하나에도 나다운 선택을.<br>마음에 드는 상품을 만나보세요.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary btn-large" href="#productSection">상품 둘러보기 <span aria-hidden="true">↗</span></a>
+          <a class="text-link" data-guest-only href="/signup.html">함께 시작하기 <span aria-hidden="true">→</span></a>
+          <a class="text-link" data-admin-only style="display:none;" href="/product-create.html">상품 등록하기 <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="hero-caption"><span class="caption-line" aria-hidden="true"></span> GOOD THINGS, SIMPLE MOMENTS.</div>
+      </div>
+      <!-- 외부 이미지 로딩 없이 표시되는 장식용 그래픽 -->
+      <div class="hero-art" aria-hidden="true">
+        <div class="art-top"><span>THE EVERYDAY EDIT</span><span>NO. 02 / SYONG</span></div>
+        <div class="art-orbit"></div><div class="art-word">simple.</div>
+        <div class="art-pedestal"></div><div class="art-vase"><span></span></div>
+        <div class="art-leaf leaf-one"></div><div class="art-leaf leaf-two"></div><div class="art-leaf leaf-three"></div>
+        <div class="art-stem"></div><div class="art-object"></div>
+        <div class="art-sticker">less,<br><i>but better.</i></div>
+        <div class="art-bottom"><span>당신의 일상, 당신의 취향.</span><span>↗</span></div>
+      </div>
+    </section>
+    <section class="store-note" aria-label="스토어 소개">
+      <span class="note-number">01 — DISCOVER</span>
+      <p>둘러보고, 발견하고, <strong>마음에 드는 것을 담는 시간.</strong></p>
+      <a class="text-link" href="#productSection">지금 만나보기 <span aria-hidden="true">↓</span></a>
+    </section>
+    <section id="productSection" class="product-section" aria-labelledby="productsTitle">
+      <div class="section-head">
+        <div><div class="section-eyebrow">THE COLLECTION</div>
+          <h2 class="section-title" id="productsTitle">발견하는 즐거움<span class="title-dot">.</span></h2>
+          <div class="section-sub">등록된 상품을 한곳에서 둘러보세요.</div>
+        </div>
+        <div class="section-count" id="productCount" aria-live="polite">상품을 불러오는 중</div>
+      </div>
+      <div id="productList" class="grid" aria-live="polite"></div>
+    </section>
+    <section class="join-panel">
+      <div><div class="section-eyebrow">MAKE IT YOURS</div><h2>당신의 취향도<br>이곳에서 시작해요.</h2></div>
+      <div><p>계정을 만들고 장바구니에 담아<br>마음에 드는 상품을 구매해보세요.</p>
+        <a class="btn btn-primary" data-guest-only href="/signup.html">회원가입하기 <span aria-hidden="true">↗</span></a>
+        <a class="btn btn-primary" data-admin-only style="display:none;" href="/product-create.html">상품 등록하기 <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+  </main>
+  <footer class="footer container">
+    <a href="/" class="brand">syong<span class="brand-accent">store.</span></a>
+    <div class="footer-sub">일상에 취향을 더하는 작은 공간</div>
+    <div class="footer-edition">© SYONG STORE · EDITION 02</div>
+  </footer>
+  <script src="/assets/app.js?v=demo-v3-fixed"></script>
+  <script>renderHeader(); loadProducts();</script>
+</body>
+</html>
