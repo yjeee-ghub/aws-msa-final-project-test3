@@ -24,18 +24,18 @@ configMapGenerator:
 # CI에서 Git 커밋별 이미지 태그로 변경할 위치
 images:
   - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/member-service
-    newTag: a8f8763834e753bde6aeff04938ac546aaf5f42e
-    digest: sha256:73f9f658e097740994fb7d86545bf4b13af24ae85ff4515a7fa7d36ca0d445ce
+    newTag: 96a83944bd6d35569a1d69cbe34fc84968fd4666
+    digest: sha256:88ea5c726c755e263e25be47fdf3e625f6f39c216e3ee5d687def8047ccb8d58
   - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/product-service
-    newTag: a8f8763834e753bde6aeff04938ac546aaf5f42e
-    digest: sha256:7240eefafd4fdd4ae3f82ed10418107ae9da6444c74fbac52de7c1fd9f4e57ca
+    newTag: 96a83944bd6d35569a1d69cbe34fc84968fd4666
+    digest: sha256:c75049a8cd036f97fb793499ec81d24119c51c40d326aeb3af3003e9ae6f131f
   - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/ordering-service
     newTag: a8f8763834e753bde6aeff04938ac546aaf5f42e
     digest: sha256:0694ce1cedfc11b5ddc45cd365cfa917f60d3b3b24a64ba60437b61c876bfc2c
   - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/apigateway
-    newTag: a8f8763834e753bde6aeff04938ac546aaf5f42e
-    digest: sha256:bdb40581ff79294b5ecbacabc3fbf585d826e00615e353199637a7799fbf8272
+    newTag: 96a83944bd6d35569a1d69cbe34fc84968fd4666
+    digest: sha256:4db9d43c02a36704fbb7d4e83391bb40c240010da45fc7340a838759c809cc0d
   - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/frontend-service
-    newTag: f92fee30e2091912bdfbd9f09ee7360b7074bf4d
-    digest: sha256:f6b0c6941466069b233945f92ed0bb42de42fb39b927f588ff923a1463ffdfb5
+    newTag: 96a83944bd6d35569a1d69cbe34fc84968fd4666
+    digest: sha256:5eeff70c3e840d9490a026ed601f1049e7ec4d326d2385d371220fbd4cb7d125
 
