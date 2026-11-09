@@ -60,11 +60,33 @@ def verify_volumes(items):
     check(all(v.get('status', {}).get('phase') == 'Bound' for v in items), 'monitoring PVC not Bound')
 
 
-def verify_ha_network(subnets, nats, tables, db, *, verified_bypasses=None):
+def rds_standby(db, interfaces):
+    if db.get('SecondaryAvailabilityZone'):
+        return db['SecondaryAvailabilityZone'], 'rds-api'
+    # The RDS API can omit the optional secondary AZ. Corroborate placement
+    # with in-use RDS interfaces scoped to this instance's DB network.
+    network = db.get('DBSubnetGroup', {})
+    subnets = {s['SubnetIdentifier']: s['SubnetAvailabilityZone']['Name'] for s in network.get('Subnets', [])}
+    groups = {g['VpcSecurityGroupId'] for g in db.get('VpcSecurityGroups', [])}
+    interfaces = [interface for interface in interfaces
+                  if groups and interface.get('VpcId') == network.get('VpcId')
+                  and interface.get('Description') == 'RDSNetworkInterface'
+                  and interface.get('RequesterManaged') and interface.get('RequesterId') == 'amazon-rds'
+                  and interface.get('Status') == 'in-use'
+                  and interface.get('AvailabilityZone') == subnets.get(interface.get('SubnetId'))
+                  and {group['GroupId'] for group in interface.get('Groups', [])} == groups]
+    zones = {interface['AvailabilityZone'] for interface in interfaces}
+    primary = db.get('AvailabilityZone')
+    check(len(interfaces) == 2 and len(zones) == 2 and primary in zones, 'RDS standby AZ not ready')
+    return next(iter(zones - {primary})), 'rds-network-interfaces'
+
+
+def verify_ha_network(subnets, nats, tables, db, *, verified_bypasses=None, rds_interfaces=()):
     """Require native paths, or a separately confirmed fresh controller bypass."""
     verified_bypasses = verified_bypasses or {}
     check(db.get('MultiAZ') is True, 'RDS Multi-AZ disabled')
-    primary, standby = db.get('AvailabilityZone'), db.get('SecondaryAvailabilityZone')
+    primary = db.get('AvailabilityZone')
+    standby, source = rds_standby(db, rds_interfaces)
     check(bool(primary) and bool(standby) and primary != standby, 'RDS standby AZ not ready')
     by_subnet = {s['SubnetId']: s for s in subnets}
     active = [n for n in nats if n['State'] != 'deleted']
@@ -88,7 +110,8 @@ def verify_ha_network(subnets, nats, tables, db, *, verified_bypasses=None):
                 paths.append({'az': subnet['AvailabilityZone'], 'subnet': sid, 'nat': route['NatGatewayId'], 'routeTable': table['RouteTableId'],
                               'mode': 'native' if native else 'verified-bypass'})
     check(len(paths) == 2 and len({p['az'] for p in paths}) == 2, 'expected two app subnet routes in distinct AZs')
-    return {'natPaths': paths, 'rdsMultiAZ': True, 'primaryAZ': primary, 'standbyAZ': standby}
+    return {'natPaths': paths, 'rdsMultiAZ': True, 'primaryAZ': primary, 'standbyAZ': standby,
+            'standbyAZSource': source}
 
 
 def infra():
@@ -110,6 +133,10 @@ def infra():
     check(db['DBSubnetGroup']['VpcId'] == net['vpcId'], 'RDS and EKS VPC mismatch')
     check(db['BackupRetentionPeriod'] >= 1, 'RDS backup retention missing')
     vpc_filter = 'Name=vpc-id,Values=' + net['vpcId']
+    rds_interfaces = ()
+    if db.get('MultiAZ') is True and not db.get('SecondaryAvailabilityZone'):
+        group_filter = 'Name=group-id,Values=' + ','.join(g['VpcSecurityGroupId'] for g in db['VpcSecurityGroups'])
+        rds_interfaces = aws('ec2', 'describe-network-interfaces', '--filters', vpc_filter, group_filter)['NetworkInterfaces']
     from lab_common import Runner, state
     from nat_failover import config_from_state, status as nat_status
     runner = Runner()
@@ -121,7 +148,7 @@ def infra():
         aws('ec2', 'describe-subnets', '--filters', vpc_filter)['Subnets'],
         aws('ec2', 'describe-nat-gateways', '--filter', vpc_filter)['NatGateways'],
         aws('ec2', 'describe-route-tables', '--filters', vpc_filter)['RouteTables'], db,
-        verified_bypasses=controller['bypassRoutes'])
+        verified_bypasses=controller['bypassRoutes'], rds_interfaces=rds_interfaces)
     return {'vpc': net['vpcId'], 'nodeBounds': 'a=1..3 c=2..3', 'database': 'private, encrypted, available',
             **topology, 'natController': controller,
             'manualFollowUp': 'Native or freshly verified bypass routes and RDS MultiAZ observed; fault injection and all SG paths are not proven by this gate'}

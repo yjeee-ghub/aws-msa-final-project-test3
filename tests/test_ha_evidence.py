@@ -35,6 +35,25 @@ class HaTests(unittest.TestCase):
     def test_az_local_routes_and_standby_pass(self):
         self.assertEqual(len(self.verify()['natPaths']), 2)
 
+    def test_secondary_az_can_be_corroborated_by_two_scoped_rds_interfaces(self):
+        self.db.pop('SecondaryAvailabilityZone')
+        self.db.update(
+            DBSubnetGroup={'VpcId': 'vpc-db', 'Subnets': [
+                {'SubnetIdentifier': 'db-' + az, 'SubnetAvailabilityZone': {'Name': az}} for az in ('a', 'c')]},
+            VpcSecurityGroups=[{'VpcSecurityGroupId': 'sg-db'}],
+        )
+        interfaces = [
+            {'VpcId': 'vpc-db', 'SubnetId': 'db-' + az, 'AvailabilityZone': az, 'Groups': [{'GroupId': 'sg-db'}],
+             'RequesterManaged': True, 'RequesterId': 'amazon-rds', 'Status': 'in-use',
+             'Description': 'RDSNetworkInterface'} for az in ('a', 'c')
+        ]
+        result = verify_ha_network(self.subnets, self.nats, self.tables, self.db, rds_interfaces=interfaces)
+        self.assertEqual(result['standbyAZ'], 'c')
+        self.assertEqual(result['standbyAZSource'], 'rds-network-interfaces')
+        interfaces[1]['Groups'] = [{'GroupId': 'sg-unrelated'}]
+        with self.assertRaisesRegex(ValueError, 'standby AZ not ready'):
+            verify_ha_network(self.subnets, self.nats, self.tables, self.db, rds_interfaces=interfaces)
+
     def test_single_nat_or_cross_az_route_fails(self):
         original = copy.deepcopy(self.nats)
         self.nats.pop()
