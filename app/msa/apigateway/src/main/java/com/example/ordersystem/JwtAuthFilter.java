@@ -44,7 +44,8 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
     boolean adminProductWrite =
         (HttpMethod.POST.equals(method) && path.equals("/product-service/product/create"))
             || ((HttpMethod.PUT.equals(method) || HttpMethod.DELETE.equals(method))
-                && path.matches("/product-service/product/[0-9]+"));
+                && path.matches("/product-service/product/[0-9]+"))
+            || (HttpMethod.PATCH.equals(method) && path.matches("/product-service/product/[0-9]+/stock"));
     // 상품 관리 요청만 외부에 열고 내부 재고 API는 계속 차단한다.
     if (path.startsWith("/product-service/")
         && !HttpMethod.GET.equals(method)

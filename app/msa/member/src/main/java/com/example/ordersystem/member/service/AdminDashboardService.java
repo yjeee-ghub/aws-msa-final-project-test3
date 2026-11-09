@@ -18,6 +18,11 @@ import javax.net.ssl.*;
 
 @Service
 public class AdminDashboardService {
+    private static final int PAGE_SIZE = 25;
+
+    public record Page<T>(List<T> items, boolean hasNext) {}
+    public record MemberRow(long id, String loginId, String nickname, String role) {}
+    public record OrderRow(long id, String nickname, String product, int quantity, String status) {}
     private final JdbcTemplate db;
     private final ObjectMapper json;
     private final HttpClient http;
@@ -40,6 +45,24 @@ public class AdminDashboardService {
         result.put("deployment", deployment());
         result.put("checkedAt", Instant.now().toString());
         return result;
+    }
+
+    public Page<MemberRow> members(int page) {
+        var rows = db.query("""
+                select id, login_id, nickname, role from member order by id desc limit ? offset ?
+                """, (rs, n) -> new MemberRow(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4)),
+                PAGE_SIZE + 1, (long) page * PAGE_SIZE);
+        return new Page<>(rows.subList(0, Math.min(rows.size(), PAGE_SIZE)), rows.size() > PAGE_SIZE);
+    }
+
+    public Page<OrderRow> orders(int page) {
+        var rows = db.query("""
+                select o.id, m.nickname, coalesce(o.product_name, p.name), o.quantity, o.order_status
+                from ordering o left join member m on o.member_id = m.id
+                left join product p on o.product_id = p.id order by o.id desc limit ? offset ?
+                """, (rs, n) -> new OrderRow(rs.getLong(1), rs.getString(2), rs.getString(3),
+                rs.getInt(4), rs.getString(5)), PAGE_SIZE + 1, (long) page * PAGE_SIZE);
+        return new Page<>(rows.subList(0, Math.min(rows.size(), PAGE_SIZE)), rows.size() > PAGE_SIZE);
     }
 
     private Map<String, Object> database() {

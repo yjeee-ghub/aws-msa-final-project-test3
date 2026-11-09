@@ -7,6 +7,8 @@ import com.example.ordersystem.product.dto.ProductResDto;
 import com.example.ordersystem.product.dto.ProductUpdateStockDto;
 import com.example.ordersystem.product.service.ProductService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/product")
 public class ProductController {
   private final ProductService productService;
+
+  public record StockChange(
+      @NotNull @PositiveOrZero Integer expectedStockQuantity,
+      @NotNull @PositiveOrZero Integer stockQuantity) {}
 
   @org.springframework.beans.factory.annotation.Value("${INTERNAL_SERVICE_TOKEN:}")
   private String internalToken;
@@ -83,6 +89,13 @@ public class ProductController {
     requireAdmin(role);
     productService.productDelete(id);
     return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping("/{id}/stock")
+  public ProductResDto setAvailableStock(@PathVariable Long id, @Valid @RequestBody StockChange change,
+      @RequestHeader("X-User-Role") String role) {
+    requireAdmin(role);
+    return productService.setAvailableStock(id, change.expectedStockQuantity(), change.stockQuantity());
   }
 
   @PutMapping("/updatestock")

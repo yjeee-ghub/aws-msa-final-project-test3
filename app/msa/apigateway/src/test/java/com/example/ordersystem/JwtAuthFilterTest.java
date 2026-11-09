@@ -91,9 +91,9 @@ class JwtAuthFilterTest {
   }
 
   @Test
-  void onlyAdminBearerCanEditAndDeleteProducts() {
-    for (var method : java.util.List.of(HttpMethod.PUT, HttpMethod.DELETE)) {
-      String path = "/product-service/product/42";
+  void onlyAdminBearerCanManageProducts() {
+    for (var method : java.util.List.of(HttpMethod.PUT, HttpMethod.DELETE, HttpMethod.PATCH)) {
+      String path = "/product-service/product/42" + (HttpMethod.PATCH.equals(method) ? "/stock" : "");
       var customer = MockServerWebExchange.from(MockServerHttpRequest.method(method, path)
           .header("Authorization", "Bearer " + token("USER"))
           .header("X-User-Role", "ROLE_ADMIN"));

@@ -57,10 +57,7 @@ public class ProductService {
 
     public ProductResDto productEdit(Long id, ProductEditDto dto) throws IOException {
         Product product = activeProductForUpdate(id);
-        if (dto.getStockQuantity() != null
-                && !product.getStockQuantity().equals(dto.getExpectedStockQuantity())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "재고가 변경됐습니다. 상품을 다시 불러와 주세요.");
-        }
+        if (dto.getStockQuantity() != null) requireExpectedStock(product, dto.getExpectedStockQuantity());
         String imageUrl = product.getImageUrl();
         if (dto.getImageFile() != null && !dto.getImageFile().isEmpty()) {
             imageUrl = s3Service.uploadFile(dto.getImageFile());
@@ -68,6 +65,19 @@ public class ProductService {
         product.edit(dto.getName().trim(), dto.getCategory(), dto.getDescription(),
                 dto.getPrice(), dto.getStockQuantity(), imageUrl);
         return toDto(product);
+    }
+
+    public ProductResDto setAvailableStock(Long id, int expected, int quantity) {
+        Product product = activeProductForUpdate(id);
+        requireExpectedStock(product, expected);
+        product.setAvailableStock(quantity);
+        return toDto(product);
+    }
+
+    private void requireExpectedStock(Product product, Integer expected) {
+        if (!product.getStockQuantity().equals(expected)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "재고가 변경됐습니다. 상품을 다시 불러와 주세요.");
+        }
     }
 
     public void productDelete(Long id) {

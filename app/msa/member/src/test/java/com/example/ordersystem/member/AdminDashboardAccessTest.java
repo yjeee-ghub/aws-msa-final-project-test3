@@ -13,6 +13,9 @@ class AdminDashboardAccessTest {
         var controller = new AdminDashboardController(service);
         assertEquals(403, controller.summary("ROLE_USER").getStatusCode().value());
         assertEquals(403, controller.summary(null).getStatusCode().value());
+        assertEquals(403, controller.members("ROLE_USER", 0).getStatusCode().value());
+        assertEquals(403, controller.orders(null, 0).getStatusCode().value());
+        assertEquals(400, controller.orders("ROLE_ADMIN", -1).getStatusCode().value());
         verifyNoInteractions(service);
     }
     @Test void administratorResponseIsNotCached() {

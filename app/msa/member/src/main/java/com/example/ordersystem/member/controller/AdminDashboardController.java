@@ -16,4 +16,22 @@ public class AdminDashboardController {
         if (!"ROLE_ADMIN".equals(role)) return ResponseEntity.status(403).build();
         return ResponseEntity.ok().header("Cache-Control", "no-store").body(dashboard.summary());
     }
+
+    @GetMapping("/members")
+    public ResponseEntity<?> members(
+            @RequestHeader(value = "X-User-Role", required = false) String role,
+            @RequestParam(defaultValue = "0") int page) {
+        if (!"ROLE_ADMIN".equals(role)) return ResponseEntity.status(403).build();
+        if (page < 0) return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok().header("Cache-Control", "no-store").body(dashboard.members(page));
+    }
+
+    @GetMapping("/orders")
+    public ResponseEntity<?> orders(
+            @RequestHeader(value = "X-User-Role", required = false) String role,
+            @RequestParam(defaultValue = "0") int page) {
+        if (!"ROLE_ADMIN".equals(role)) return ResponseEntity.status(403).build();
+        if (page < 0) return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok().header("Cache-Control", "no-store").body(dashboard.orders(page));
+    }
 }

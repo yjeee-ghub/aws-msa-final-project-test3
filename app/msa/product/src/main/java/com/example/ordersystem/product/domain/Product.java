@@ -57,8 +57,15 @@ public class Product extends BaseTimeEntity {
     this.price = price;
     this.imageUrl = imageUrl;
     if (stock != null) {
-      this.stockQuantity = stock;
+      setAvailableStock(stock);
     }
+  }
+
+  public void setAvailableStock(int stock) {
+    if (stock < 0) {
+      throw new IllegalArgumentException("재고는 0개 이상이어야 합니다.");
+    }
+    this.stockQuantity = stock;
   }
 
   public void restoreStock(int quantity) {

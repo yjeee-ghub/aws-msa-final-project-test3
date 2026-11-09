@@ -128,6 +128,18 @@ class ReservationWorkflowTest {
   }
 
   @Test
+  void inlineStockChangeKeepsProductFieldsAndRejectsStaleWrites() {
+    Long id = product(5);
+    var updated = catalog.setAvailableStock(id, 5, 12);
+    assertEquals("shoe", updated.getName());
+    assertEquals(1500, updated.getPrice());
+    assertEquals(12, updated.getStockQuantity());
+    var conflict = assertThrows(ResponseStatusException.class, () -> catalog.setAvailableStock(id, 5, 10));
+    assertEquals(HttpStatus.CONFLICT, conflict.getStatusCode());
+    assertEquals(12, catalog.productDetail(id).getStockQuantity());
+  }
+
+  @Test
   void concurrentReservationsCannotOversellLastUnit() throws Exception {
     Long id = product(1);
     var gate = new CountDownLatch(1);
