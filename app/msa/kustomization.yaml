@@ -24,18 +24,18 @@ configMapGenerator:
 # CI에서 Git 커밋별 이미지 태그로 변경할 위치
 images:
   - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/member-service
-    newTag: 0b5365b957a2f56b642f0e1fc9fffe96f86e839e
-    digest: sha256:0f907efa680ece9dbea6801c36bacc7e38e611f6d19344689c357c1213e2b282
+    newTag: 07d71d565db56d925d1d39b0c1b0fee86d0c083c
+    digest: sha256:4e5761486ed3b2da6c8db14fccbaef1b0ea1139629f5a3c0228868434e15508d
   - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/product-service
-    newTag: 0b5365b957a2f56b642f0e1fc9fffe96f86e839e
-    digest: sha256:653ef2ce730c5b45d574e2a666b43713775d81b8f9ab128efb3f2b86bc3913d8
+    newTag: 07d71d565db56d925d1d39b0c1b0fee86d0c083c
+    digest: sha256:a00bad14a39d25648c876216d4b33c68efc1093100b904034008cdb561fadfab
   - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/ordering-service
-    newTag: b09a756f4ca738e542265e7d52174ca20a8b5d7d
-    digest: sha256:bfd160f7cf246fd9c30e183573f2db102f71402b0e10af2b0824f7224ae28b5a
+    newTag: 07d71d565db56d925d1d39b0c1b0fee86d0c083c
+    digest: sha256:4bc8271bfcc4eab1efb0ce7a75a8b62a66b622e2d9886d639c44da5acbe4264e
   - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/apigateway
-    newTag: 0b5365b957a2f56b642f0e1fc9fffe96f86e839e
-    digest: sha256:25d01f6e11f27372e430c771917d761d6afe81a90a9b0244e167f3ef65b46625
+    newTag: 07d71d565db56d925d1d39b0c1b0fee86d0c083c
+    digest: sha256:513becc3825faf9dfdfad62ed5bd18ead079a6bacb727d4bbbef9c9058d6536b
   - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/frontend-service
-    newTag: b5c5b846948a561898c0cc729384c864f8bf0742
-    digest: sha256:b7f0c4ba144fc77c8733ba9fcdb3f76a22268db2f678c7a133f1e74783a3f0f2
+    newTag: 07d71d565db56d925d1d39b0c1b0fee86d0c083c
+    digest: sha256:8cb3f95f219f4af766d71f7f368cd689946d00fe7a1c22f20532256af0786a64
 
