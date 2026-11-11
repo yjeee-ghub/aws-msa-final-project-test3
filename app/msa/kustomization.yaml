@@ -36,6 +36,6 @@ images:
     newTag: 07d71d565db56d925d1d39b0c1b0fee86d0c083c
     digest: sha256:513becc3825faf9dfdfad62ed5bd18ead079a6bacb727d4bbbef9c9058d6536b
   - name: 683668078297.dkr.ecr.ap-northeast-2.amazonaws.com/frontend-service
-    newTag: slide42-replay-20261111-v1
-    digest: sha256:d3217a260ba02e9682e106dc53ee5100a88c5599c14b55cc8468603d2241a2e5
+    newTag: slide42-replay-20261111-v2
+    digest: sha256:b3c2d702c2bc9a71b31c39b11a4367847cc0065bdddb1e56d36e4c1366faf3b6
 
